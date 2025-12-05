@@ -1,84 +1,117 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>KMS UMKM Susu Segar — FINAL FIX</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>KMS UMKM Susu Segar — FINAL ADMIN EDITION</title>
 
 <style>
-/* =======================================================
-   GLOBAL & RESET
-======================================================= */
+/* ============================================================
+   GLOBAL STYLE
+============================================================ */
 :root{
   --accent:#1f6feb;
+  --accent2:#00b4d8;
   --muted:#6b7280;
-  --bg:#f5f6fa;
   --white:#ffffff;
-  --radius:10px;
-  --maxw:1100px;
+  --bg:#f5f6fa;
+  --radius:12px;
+  --maxw:1200px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
-  font-family: system-ui, Arial, sans-serif;
+  font-family:system-ui,Arial,sans-serif;
   background:var(--bg);
-  color:#111;
-  line-height:1.45;
+  color:#222;
+  line-height:1.6;
 }
 
-/* =======================================================
-   LOGIN PAGE
-======================================================= */
-#loginPage{
-  max-width:380px;
-  margin:70px auto;
-  background:var(--white);
-  padding:24px;
+/* ============================================================
+   LOGIN PAGE — NEW DESIGN
+============================================================ */
+#loginPage {
+  width:100%;
+  height:100vh;
+  background:url('https://images.unsplash.com/photo-1550581190-9c1c48d21d6c?auto=format&fit=crop&w=1650&q=80');
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  backdrop-filter:blur(2px);
+}
+
+.loginCard{
+  width:380px;
+  padding:32px;
+  background:rgba(255,255,255,0.92);
   border-radius:var(--radius);
-  box-shadow:0 4px 14px rgba(0,0,0,0.07);
+  box-shadow:0 6px 20px rgba(0,0,0,0.2);
+  animation:fadeUp .6s ease;
 }
-#loginPage h2{
-  margin-bottom:14px;
+
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.loginCard h2{
   text-align:center;
+  margin-bottom:18px;
+  font-weight:700;
+  color:#124b94;
 }
+
 .loginField{
   margin-bottom:14px;
   display:flex;
   flex-direction:column;
   gap:6px;
 }
+
 .loginField select,
 .loginField input{
-  padding:10px 12px;
+  padding:12px;
   border-radius:8px;
-  border:1px solid #d1d5db;
-}
-.btnLogin{
-  width:100%;
-  padding:10px;
-  background:var(--accent);
-  color:white;
-  border:none;
-  border-radius:8px;
-  font-weight:bold;
-  cursor:pointer;
-}
-#loginError{
-  margin-top:10px;
-  color:#d00;
-  text-align:center;
-  font-size:14px;
+  border:1px solid #cfd6e1;
+  font-size:15px;
 }
 
-/* =======================================================
-   HEADER
-======================================================= */
-header{
-  background:linear-gradient(90deg,var(--accent),#0b7cd1);
+.btnLogin{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(135deg,#1f6feb,#00b4d8);
+  border:none;
   color:white;
-  padding:18px 0;
-  box-shadow:0 3px 10px rgba(0,0,0,0.1);
+  border-radius:10px;
+  font-size:16px;
+  font-weight:600;
+  margin-top:10px;
+  cursor:pointer;
+  transition:.2s;
 }
-.wrapHeader{
+.btnLogin:hover{
+  filter:brightness(1.1);
+}
+
+#loginError{
+  margin-top:10px;
+  text-align:center;
+  font-size:14px;
+  color:#d62828;
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+header{
+  background:linear-gradient(90deg,#1f6feb,#00b4d8);
+  padding:18px 0;
+  color:white;
+  box-shadow:0 2px 10px rgba(0,0,0,0.15);
+}
+.headerWrap{
   max-width:var(--maxw);
   margin:auto;
   padding:0 16px;
@@ -87,38 +120,37 @@ header{
   align-items:center;
 }
 #roleBadge{
-  display:none;
   background:white;
-  color:var(--accent);
-  padding:4px 10px;
+  padding:6px 12px;
   border-radius:999px;
-  font-size:12px;
+  color:#1f6feb;
+  font-weight:600;
+  display:none;
 }
 
-/* =======================================================
+/* ============================================================
    LAYOUT GRID
-======================================================= */
-.appWrap{
+============================================================ */
+#app{
   max-width:var(--maxw);
   margin:20px auto;
   padding:0 16px;
   display:grid;
-  grid-template-columns:250px 1fr;
-  gap:18px;
+  grid-template-columns:260px 1fr;
+  gap:20px;
 }
 @media (max-width:850px){
-  .appWrap{grid-template-columns:1fr;}
+  #app{grid-template-columns:1fr;}
 }
 
-/* =======================================================
+/* ============================================================
    SIDEBAR
-======================================================= */
+============================================================ */
 .sidebar{
   background:white;
-  padding:16px;
+  padding:18px;
   border-radius:var(--radius);
   box-shadow:0 4px 12px rgba(0,0,0,0.06);
-  height:fit-content;
 }
 .sidebar nav{
   margin-top:10px;
@@ -127,341 +159,792 @@ header{
   gap:6px;
 }
 .sidebar nav a{
-  padding:8px 10px;
-  border-radius:6px;
-  cursor:pointer;
-  text-decoration:none;
-  color:#1f6feb;
+  padding:10px 12px;
+  border-radius:8px;
   font-weight:600;
+  cursor:pointer;
+  color:#1f6feb;
+  text-decoration:none;
 }
 .sidebar nav a.active{
   background:#e7f0ff;
 }
 
-/* =======================================================
-   CONTENT
-======================================================= */
+/* ============================================================
+   CONTENT AREA
+============================================================ */
 .card{
   background:white;
-  padding:18px;
+  padding:20px;
   border-radius:var(--radius);
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
-  margin-bottom:16px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  margin-bottom:20px;
 }
+
 .hidden{display:none;}
 
+/* SOP COLLAPSIBLE */
 .sopItem h3{
   cursor:pointer;
   color:#1f6feb;
-  margin-bottom:6px;
 }
 .sopDetail{
-  padding-left:16px;
   margin-top:6px;
+  padding-left:14px;
   display:none;
 }
 
-/* Logout Button */
-#logoutBtn{
-  margin-top:14px;
-  display:inline-block;
-  padding:8px 12px;
+/* ============================================================
+   ADMIN PANEL FEATURES
+============================================================ */
+.adminBox{
+  background:#f1f7ff;
+  padding:14px;
+  border-left:4px solid #1f6feb;
+  margin-bottom:16px;
   border-radius:8px;
-  border:1px solid #d1d5db;
+}
+
+.adminInput{
+  width:100%;
+  padding:10px;
+  border:1px solid #cfd6e1;
+  border-radius:8px;
+  margin:6px 0 12px;
+}
+
+.adminBtn{
+  padding:10px 14px;
+  background:#1f6feb;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:14px;
+}
+
+/* Logout */
+#logoutBtn{
+  margin-top:16px;
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid #ccc;
   background:#fafafa;
   cursor:pointer;
-  color:#444;
+  font-weight:600;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ======================================================
-     HALAMAN LOGIN
-====================================================== -->
+<!-- ================================
+     LOGIN PAGE
+================================ -->
 <div id="loginPage">
-    <h2>Login KMS</h2>
+  <div class="loginCard">
+    <h2>Login KMS UMKM Susu Segar</h2>
 
     <div class="loginField">
-        <label>Pilih Role</label>
-        <select id="roleSelect">
-            <option value="admin">Admin</option>
-            <option value="supervisor">Supervisor</option>
-            <option value="operator">Operator</option>
-            <option value="viewer">Viewer</option>
-        </select>
+      <label>Pilih Role</label>
+      <select id="roleSelect">
+        <option value="Admin">Admin</option>
+        <option value="Supervisor">Supervisor</option>
+        <option value="Operator">Operator</option>
+        <option value="Viewer">Viewer</option>
+      </select>
     </div>
 
     <div class="loginField">
-        <label>Password</label>
-        <input type="password" id="passwordInput" placeholder="Masukkan password..." />
+      <label>Password</label>
+      <input type="password" id="passwordInput" placeholder="Masukkan Password">
     </div>
 
-    <button class="btnLogin" onclick="doLogin()">Login</button>
+    <button class="btnLogin" onclick="doLogin()">Masuk Sekarang</button>
 
     <div id="loginError"></div>
+  </div>
 </div>
 
 
 
-<!-- ======================================================
-     APP KMS
-====================================================== -->
-<div id="app" style="display:none;">
+<!-- ================================
+     APP PAGE (SETELAH LOGIN)
+================================ -->
+<div id="app" class="hidden">
 
-<header>
-    <div class="wrapHeader">
-        <h2>KMS UMKM Susu Segar</h2>
-        <span id="roleBadge">ROLE: <strong id="roleDisplay"></strong></span>
+  <!-- HEADER -->
+  <header>
+    <div class="headerWrap">
+      <h2>KMS UMKM Susu Segar</h2>
+      <span id="roleBadge"></span>
     </div>
-</header>
+  </header>
 
-<div class="appWrap">
+
+  <!-- LAYOUT GRID -->
+  <div id="app" class="appWrap">
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <nav id="sidebarMenu">
-            <a data-section="home" onclick="showSection(event)" class="active">Beranda</a>
-            <a data-section="sop" onclick="showSection(event)">SOP Pengolahan</a>
-            <a data-section="kualitas" onclick="showSection(event)">Pemeriksaan Kualitas</a>
-            <a data-section="sanitasi" onclick="showSection(event)">Kebersihan & Sanitasi</a>
-            <a data-section="pemasok" onclick="showSection(event)">Data Pemasok</a>
-            <a data-section="produk" onclick="showSection(event)">Produk</a>
-            <a data-section="pelatihan" onclick="showSection(event)">Pelatihan</a>
-        </nav>
+      <nav>
+        <a data-section="home" class="active" onclick="showSection(event)">Beranda</a>
+        <a data-section="sop" onclick="showSection(event)">SOP Pengolahan</a>
+        <a data-section="kualitas" onclick="showSection(event)">Pemeriksaan Kualitas</a>
+        <a data-section="sanitasi" onclick="showSection(event)">Kebersihan & Sanitasi</a>
+        <a data-section="pemasok" onclick="showSection(event)">Data Pemasok</a>
+        <a data-section="produk" onclick="showSection(event)">Produk</a>
+        <a data-section="pelatihan" onclick="showSection(event)">Pelatihan</a>
 
-        <button id="logoutBtn" onclick="logoutUser()">Logout</button>
+        <!-- HANYA ADMIN -->
+        <a id="menu-admin" data-section="adminPanel" onclick="showSection(event)" style="color:#d62828; font-weight:700; display:none;">
+          ⚙ Kelola Sistem (ADMIN)
+        </a>
+
+      </nav>
+
+      <button id="logoutBtn" onclick="logout()">Logout</button>
     </aside>
 
 
-    <!-- ======================================================
-         HALAMAN UTAMA KMS
-    ====================================================== -->
+
+    <!-- ================================
+         CONTENT AREA
+    ================================= -->
     <main>
 
-        <!-- BERANDA -->
-        <section id="home" class="card section">
-            <h2>Beranda</h2>
-            <p>Selamat datang di sistem KMS UMKM Susu Segar.</p>
-        </section>
+      <!-- BERANDA -->
+      <section id="home" class="card section">
+        <h2>Beranda</h2>
+        <p>Selamat datang di KMS UMKM Susu Segar. Sistem ini berisi dokumentasi SOP, Sanitasi, Kualitas, Supplier, Produk, dan Pelatihan.</p>
+      </section>
+
+
+
+
+      <!-- SOP -->
+      <section id="sop" class="card section hidden">
+        <h2>SOP Pengolahan</h2>
+
+        <div id="sopList"></div>
+      </section>
+
+
+
+
+      <!-- KUALITAS -->
+      <section id="kualitas" class="card section hidden">
+        <h2>Pemeriksaan Kualitas</h2>
+        <ul>
+          <li>Suhu ideal ≤ 4°C</li>
+          <li>Bau segar, tidak asam</li>
+          <li>Warna putih bersih</li>
+        </ul>
+      </section>
+
+
+
+
+      <!-- SANITASI -->
+      <section id="sanitasi" class="card section hidden">
+        <h2>Kebersihan & Sanitasi</h2>
+        <ul>
+          <li>Sterilisasi alat pagi hari</li>
+          <li>Disinfektan antar shift</li>
+          <li>Deep cleaning akhir hari</li>
+        </ul>
+      </section>
+
+
+
+      <!-- PEMASOK -->
+      <section id="pemasok" class="card section hidden">
+        <h2>Data Pemasok</h2>
+        <table border="1" width="100%" cellpadding="6">
+          <thead>
+            <tr><th>Nama</th><th>Lokasi</th><th>Kontak</th></tr>
+          </thead>
+          <tbody id="supplierList"></tbody>
+        </table>
+      </section>
+
+
+
+
+      <!-- PRODUK -->
+      <section id="produk" class="card section hidden">
+        <h2>Produk UMKM</h2>
+
+        <div id="productList" style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;"></div>
+
+      </section>
+
+
+
+      <!-- PELATIHAN -->
+      <section id="pelatihan" class="card section hidden">
+        <h2>Pelatihan Karyawan</h2>
+        <ul id="trainingList"></ul>
+      </section>
+
+
+
+
+      <!-- =========================================
+           ADMIN PANEL — CRUD REAL
+      ========================================== -->
+      <section id="adminPanel" class="card section hidden">
+
+        <h2>⚙ Panel Admin</h2>
+        <p>Kelola konten sistem KMS secara langsung.</p>
+
 
         <!-- SOP -->
-        <section id="sop" class="card section hidden">
-            <h2>SOP Pengolahan</h2>
+        <div class="adminBox">
+          <h3>Kelola SOP</h3>
+          <input id="newSopTitle" class="adminInput" placeholder="Judul SOP">
+          <textarea id="newSopContent" class="adminInput" placeholder="Isi SOP (tiap langkah dipisah baris)"></textarea>
+          <button class="adminBtn" onclick="addSOP()">Tambahkan SOP</button>
+        </div>
 
-            <div class="card sopItem">
-                <h3 onclick="toggleSOP('receive')">SOP Penerimaan Susu</h3>
-                <div id="sop-receive" class="sopDetail">
-                    <ol>
-                        <li>Periksa dokumen pemasok</li>
-                        <li>Cek bau, warna, rasa</li>
-                        <li>Catat suhu (≤6°C)</li>
-                        <li>Input data ke sistem</li>
-                    </ol>
-                </div>
-            </div>
-
-            <div class="card sopItem">
-                <h3 onclick="toggleSOP('filter')">SOP Penyaringan</h3>
-                <div id="sop-filter" class="sopDetail">
-                    <ol>
-                        <li>Gunakan saringan steril</li>
-                        <li>Bersihkan alat sebelum proses</li>
-                        <li>Gunakan sarung tangan</li>
-                    </ol>
-                </div>
-            </div>
-
-            <div class="card sopItem">
-                <h3 onclick="toggleSOP('pack')">SOP Pengemasan</h3>
-                <div id="sop-pack" class="sopDetail">
-                    <ol>
-                        <li>Sterilisasi botol</li>
-                        <li>Isi & segel</li>
-                        <li>Beri label batch</li>
-                    </ol>
-                </div>
-            </div>
-        </section>
-
-        <!-- KUALITAS -->
-        <section id="kualitas" class="card section hidden">
-            <h2>Pemeriksaan Kualitas</h2>
-            <ul>
-                <li>Suhu ≤ 4°C</li>
-                <li>Bau normal</li>
-                <li>Warna putih bersih</li>
-            </ul>
-        </section>
-
-        <!-- SANITASI -->
-        <section id="sanitasi" class="card section hidden">
-            <h2>Kebersihan & Sanitasi</h2>
-            <ul>
-                <li>Sterilisasi pagi</li>
-                <li>Disinfektan antar shift</li>
-                <li>Deep cleaning akhir hari</li>
-            </ul>
-        </section>
-
-        <!-- PEMASOK -->
-        <section id="pemasok" class="card section hidden">
-            <h2>Data Pemasok</h2>
-            <table>
-                <tr><th>Nama</th><th>Lokasi</th><th>Kontak</th></tr>
-                <tr><td>Peternak Sari</td><td>Desa A</td><td>0812-xxx</td></tr>
-                <tr><td>Kelompok Makmur</td><td>Kec. B</td><td>0821-yyy</td></tr>
-            </table>
-        </section>
+        <!-- SUPPLIER -->
+        <div class="adminBox">
+          <h3>Kelola Supplier</h3>
+          <input id="supName" class="adminInput" placeholder="Nama Supplier">
+          <input id="supLoc" class="adminInput" placeholder="Lokasi">
+          <input id="supContact" class="adminInput" placeholder="Kontak">
+          <button class="adminBtn" onclick="addSupplier()">Tambah Supplier</button>
+        </div>
 
         <!-- PRODUK -->
-        <section id="produk" class="card section hidden">
-            <h2>Produk</h2>
-            <ul>
-                <li>Susu Segar 500ml</li>
-                <li>Susu Botol 250ml</li>
-                <li>Yoghurt</li>
-            </ul>
-        </section>
+        <div class="adminBox">
+          <h3>Kelola Produk</h3>
+          <input id="prodName" class="adminInput" placeholder="Nama Produk">
+          <button class="adminBtn" onclick="addProduct()">Tambah Produk</button>
+        </div>
 
-        <!-- PELATIHAN -->
-        <section id="pelatihan" class="card section hidden">
-            <h2>Pelatihan Karyawan</h2>
-            <ol>
-                <li>Pemahaman susu aman</li>
-                <li>Cek kualitas harian</li>
-                <li>Kebersihan diri</li>
-            </ol>
-        </section>
+        <!-- TRAINING -->
+        <div class="adminBox">
+          <h3>Kelola Materi Pelatihan</h3>
+          <input id="trainName" class="adminInput" placeholder="Nama Materi">
+          <button class="adminBtn" onclick="addTraining()">Tambah Materi</button>
+        </div>
+
+      </section>
+
+
 
     </main>
-</div>
+  </div>
 </div>
 
 <script>
-/* ======================================================
-   LOGIN + ROLE ACCESS
-====================================================== */
+/* ===========================
+   KMS — Role Access + Admin CRUD
+   =========================== */
 
+/* ----- password per role (role keys lowercase) ----- */
 const rolePasswords = {
-    admin: "admin123",
-    supervisor: "sup123",
-    operator: "op123",
-    viewer: "view123"
+  admin: "admin123",
+  supervisor: "sup123",
+  operator: "op123",
+  viewer: "view123"
 };
 
+/* ----- storage keys ----- */
+const SOPS_KEY = "kms_sops_v1";
+const SUPP_KEY = "kms_suppliers_v1";
+const PROD_KEY = "kms_products_v1";
+const TRAIN_KEY = "kms_trainings_v1";
+
+/* ----- default sample data (used if localStorage empty) ----- */
+const DEFAULT_SOPS = [
+  { id: "receive", title: "SOP Penerimaan Susu", content: "Periksa dokumen pemasok\nCek bau, warna, rasa\nCatat suhu (≤6°C)\nInput data ke sistem" },
+  { id: "filter", title: "SOP Penyaringan", content: "Gunakan saringan steril\nBersihkan alat sebelum proses\nGunakan sarung tangan" },
+  { id: "pack", title: "SOP Pengemasan", content: "Sterilisasi botol\nIsi & segel\nBeri label batch" }
+];
+
+const DEFAULT_SUPPLIERS = [
+  { id: generateId("sup"), name: "Peternak Sari", location: "Desa A", contact: "0812-xxx" },
+  { id: generateId("sup"), name: "Kelompok Makmur", location: "Kec. B", contact: "0821-yyy" }
+];
+
+const DEFAULT_PRODUCTS = [
+  { id: generateId("prod"), name: "Susu Segar 500ml" },
+  { id: generateId("prod"), name: "Susu 250ml Botol" },
+  { id: generateId("prod"), name: "Yoghurt Lokal" }
+];
+
+const DEFAULT_TRAIN = [
+  { id: generateId("trn"), name: "Modul 1 — Penanganan Susu Aman" },
+  { id: generateId("trn"), name: "Modul 2 — Kebersihan & Sanitasi" }
+];
+
+/* ----------------------
+   Utilities
+   ---------------------- */
+function generateId(prefix = "id") {
+  return prefix + "_" + Math.random().toString(36).slice(2,9);
+}
+
+function save(key, data){
+  localStorage.setItem(key, JSON.stringify(data));
+}
+function load(key, fallback){
+  const v = localStorage.getItem(key);
+  if (!v) {
+    if (fallback !== undefined) {
+      save(key, fallback);
+      return JSON.parse(JSON.stringify(fallback));
+    }
+    return [];
+  }
+  try { return JSON.parse(v); } catch(e) { return []; }
+}
+
+/* ----------------------
+   Initialize storage if empty
+   ---------------------- */
+function ensureDefaults(){
+  if (!localStorage.getItem(SOPS_KEY)) save(SOPS_KEY, DEFAULT_SOPS);
+  if (!localStorage.getItem(SUPP_KEY)) save(SUPP_KEY, DEFAULT_SUPPLIERS);
+  if (!localStorage.getItem(PROD_KEY)) save(PROD_KEY, DEFAULT_PRODUCTS);
+  if (!localStorage.getItem(TRAIN_KEY)) save(TRAIN_KEY, DEFAULT_TRAIN);
+}
+
+/* ----------------------
+   LOGIN / LOGOUT
+   ---------------------- */
 function doLogin(){
-    const role = document.getElementById("roleSelect").value;
-    const pw = document.getElementById("passwordInput").value;
-    const err = document.getElementById("loginError");
+  const roleRaw = document.getElementById("roleSelect")?.value || "";
+  const role = String(roleRaw).toLowerCase();
+  const pw = document.getElementById("passwordInput")?.value || "";
+  const err = document.getElementById("loginError");
 
-    if (!pw){
-        err.textContent = "Password tidak boleh kosong.";
-        return;
-    }
-    if (pw !== rolePasswords[role]){
-        err.textContent = "Password salah.";
-        return;
-    }
+  err.textContent = "";
 
-    // Simpan login
-    localStorage.setItem("kms_role", role);
+  if (!role || !pw) {
+    err.textContent = "Pilih role dan masukkan password.";
+    return;
+  }
+  if (!rolePasswords[role]) {
+    err.textContent = "Role tidak dikenali.";
+    return;
+  }
+  if (pw !== rolePasswords[role]) {
+    err.textContent = "Password salah.";
+    return;
+  }
 
-    // Tampilkan app
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("app").style.display = "block";
+  // sukses
+  localStorage.setItem("kms_role", role);
 
-    setupRoleUI();
+  // show app
+  const loginPage = document.getElementById("loginPage");
+  const app = document.getElementById("app"); // outer container
+  if (loginPage) loginPage.classList.add("hidden");
+  if (app) app.classList.remove("hidden");
+
+  setupRoleUI();
 }
 
-function logoutUser(){
-    localStorage.removeItem("kms_role");
-    location.reload();
+function logout(){
+  localStorage.removeItem("kms_role");
+  // optional: do not clear content DB so admin edits persist
+  location.reload();
 }
 
-/* ======================================================
-   ATUR MENU BERDASARKAN ROLE
-====================================================== */
+/* ----------------------
+   Role-based UI setup
+   ---------------------- */
 function setupRoleUI(){
-    const role = localStorage.getItem("kms_role");
-    if (!role) return;
+  ensureDefaults();
 
-    document.getElementById("roleDisplay").textContent = role.toUpperCase();
-    document.getElementById("roleBadge").style.display = "inline-block";
+  const role = localStorage.getItem("kms_role");
+  if (!role) return;
 
-    const menu = {
-        home: document.querySelector('[data-section="home"]'),
-        sop: document.querySelector('[data-section="sop"]'),
-        kualitas: document.querySelector('[data-section="kualitas"]'),
-        sanitasi: document.querySelector('[data-section="sanitasi"]'),
-        pemasok: document.querySelector('[data-section="pemasok"]'),
-        produk: document.querySelector('[data-section="produk"]'),
-        pelatihan: document.querySelector('[data-section="pelatihan"]')
+  // show role badge
+  const roleBadge = document.getElementById("roleBadge");
+  const roleDisplay = document.getElementById("roleDisplay");
+  if (roleBadge) {
+    roleBadge.style.display = "inline-block";
+    roleBadge.textContent = role.toUpperCase();
+  }
+  if (roleDisplay) roleDisplay.textContent = role.toUpperCase();
+
+  // admin menu link show/hide
+  const menuAdmin = document.getElementById("menu-admin");
+  if (menuAdmin) menuAdmin.style.display = role === "admin" ? "block" : "none";
+
+  // nav links mapping
+  const navMap = {
+    home: document.querySelector('a[data-section="home"]'),
+    sop: document.querySelector('a[data-section="sop"]'),
+    kualitas: document.querySelector('a[data-section="kualitas"]'),
+    sanitasi: document.querySelector('a[data-section="sanitasi"]'),
+    pemasok: document.querySelector('a[data-section="pemasok"]'),
+    produk: document.querySelector('a[data-section="produk"]'),
+    pelatihan: document.querySelector('a[data-section="pelatihan"]'),
+    adminPanel: document.querySelector('a[data-section="adminPanel"]') || menuAdmin
+  };
+
+  // hide all nav first
+  Object.values(navMap).forEach(el => {
+    if (el) el.style.display = "none";
+  });
+
+  // configure per role
+  if (role === "admin") {
+    Object.values(navMap).forEach(el => { if (el) el.style.display = "block"; });
+    if (menuAdmin) menuAdmin.style.display = "block";
+  } else if (role === "supervisor") {
+    ["home","sop","kualitas","sanitasi","pemasok"].forEach(k => { if (navMap[k]) navMap[k].style.display = "block"; });
+  } else if (role === "operator") {
+    ["home","sop","kualitas","produk"].forEach(k => { if (navMap[k]) navMap[k].style.display = "block"; });
+  } else if (role === "viewer") {
+    ["home"].forEach(k => { if (navMap[k]) navMap[k].style.display = "block"; });
+  }
+
+  // render content lists
+  renderAll();
+
+  // default to home
+  const homeLink = document.querySelector('a[data-section="home"]');
+  if (homeLink) {
+    // show section programmatically
+    showSection({ preventDefault(){}, currentTarget: homeLink });
+  }
+}
+
+/* ----------------------
+   Renderers (SOP / Suppliers / Products / Trainings)
+   ---------------------- */
+function renderAll(){
+  renderSOPs();
+  renderSuppliers();
+  renderProducts();
+  renderTrainings();
+}
+
+function renderSOPs(){
+  const sops = load(SOPS_KEY, DEFAULT_SOPS);
+  const container = document.getElementById("sopList");
+  if (!container) return;
+  container.innerHTML = "";
+
+  sops.forEach(s => {
+    const card = document.createElement("div");
+    card.className = "card sopItem";
+    const title = document.createElement("h3");
+    title.textContent = s.title;
+    title.style.cursor = "pointer";
+    title.onclick = () => {
+      // toggles sop detail within this card
+      const detailId = "sop_detail_" + s.id;
+      let detail = document.getElementById(detailId);
+      if (!detail) {
+        detail = document.createElement("div");
+        detail.id = detailId;
+        detail.className = "sopDetail";
+        // content lines
+        const ol = document.createElement("ol");
+        s.content.split(/\n+/).forEach(line => {
+          const li = document.createElement("li");
+          li.textContent = line;
+          ol.appendChild(li);
+        });
+        detail.appendChild(ol);
+        card.appendChild(detail);
+      }
+      detail.style.display = detail.style.display === "block" ? "none" : "block";
     };
 
-    // Semua hidden dulu
-    Object.values(menu).forEach(m => m.style.display = "none");
+    card.appendChild(title);
 
-    if (role === "admin"){
-        Object.values(menu).forEach(m => m.style.display = "block");
-    }
-    if (role === "supervisor"){
-        menu.home.style.display = "block";
-        menu.sop.style.display = "block";
-        menu.kualitas.style.display = "block";
-        menu.sanitasi.style.display = "block";
-        menu.pemasok.style.display = "block";
-    }
-    if (role === "operator"){
-        menu.home.style.display = "block";
-        menu.sop.style.display = "block";
-        menu.kualitas.style.display = "block";
-        menu.produk.style.display = "block";
-    }
-    if (role === "viewer"){
-        menu.home.style.display = "block";
-    }
+    // small description (first line)
+    const small = document.createElement("div");
+    small.className = "small";
+    small.textContent = s.content.split(/\n+/)[0] || "";
+    card.appendChild(small);
 
-    showSection({preventDefault(){}, currentTarget: menu.home});
-}
-
-/* ======================================================
-   NAVIGASI
-====================================================== */
-function showSection(e){
-    e.preventDefault();
-    const link = e.currentTarget;
-    const section = link.dataset.section;
-
-    document.querySelectorAll(".section").forEach(s => s.classList.add("hidden"));
-    document.getElementById(section).classList.remove("hidden");
-
-    document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
-    link.classList.add("active");
-}
-
-/* ======================================================
-   SOP COLLAPSIBLE
-====================================================== */
-function toggleSOP(key){
-    const el = document.getElementById("sop-" + key);
-    el.style.display = el.style.display === "block" ? "none" : "block";
-}
-
-/* ======================================================
-   LOAD STATE
-====================================================== */
-document.addEventListener("DOMContentLoaded", ()=>{
+    // if admin, show edit/delete buttons
     const role = localStorage.getItem("kms_role");
+    if (role === "admin") {
+      const actions = document.createElement("div");
+      actions.style.marginTop = "10px";
+      const btnEdit = document.createElement("button");
+      btnEdit.className = "adminBtn";
+      btnEdit.style.marginRight = "8px";
+      btnEdit.textContent = "Edit";
+      btnEdit.onclick = () => editSOP(s.id);
 
-    if (role){
-        document.getElementById("loginPage").style.display = "none";
-        document.getElementById("app").style.display = "block";
-        setupRoleUI();
+      const btnDel = document.createElement("button");
+      btnDel.className = "adminBtn";
+      btnDel.style.background = "#d62828";
+      btnDel.textContent = "Hapus";
+      btnDel.onclick = () => {
+        if (confirm("Hapus SOP ini?")) removeSOP(s.id);
+      };
+
+      actions.appendChild(btnEdit);
+      actions.appendChild(btnDel);
+      card.appendChild(actions);
     }
+
+    container.appendChild(card);
+  });
+
+  if (sops.length === 0) {
+    container.innerHTML = "<div class='card'>Belum ada SOP. (Admin dapat menambahkan di Panel Admin)</div>";
+  }
+}
+
+function renderSuppliers(){
+  const arr = load(SUPP_KEY, DEFAULT_SUPPLIERS);
+  const tbody = document.getElementById("supplierList");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  arr.forEach(s => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${s.name}</td><td>${s.location}</td><td>${s.contact}</td>`;
+    // admin actions
+    const role = localStorage.getItem("kms_role");
+    if (role === "admin") {
+      const tdActions = document.createElement("td");
+      tdActions.colSpan = 0;
+      const btnDel = document.createElement("button");
+      btnDel.className = "adminBtn";
+      btnDel.style.marginLeft = "8px";
+      btnDel.textContent = "Hapus";
+      btnDel.onclick = () => { if(confirm("Hapus pemasok?")) removeSupplier(s.id); };
+      tr.appendChild(document.createElement("td")); // ensure columns match
+      tr.lastChild.appendChild(btnDel);
+    }
+    tbody.appendChild(tr);
+  });
+  if (arr.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='3'>Belum ada pemasok.</td></tr>";
+  }
+}
+
+function renderProducts(){
+  const arr = load(PROD_KEY, DEFAULT_PRODUCTS);
+  const cont = document.getElementById("productList");
+  if (!cont) return;
+  cont.innerHTML = "";
+  arr.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "productCard card";
+    card.innerHTML = `<h4>${p.name}</h4>`;
+    // admin delete
+    const role = localStorage.getItem("kms_role");
+    if (role === "admin") {
+      const btn = document.createElement("button");
+      btn.className = "adminBtn";
+      btn.style.marginTop = "8px";
+      btn.textContent = "Hapus";
+      btn.onclick = () => { if(confirm("Hapus produk?")) removeProduct(p.id); };
+      card.appendChild(btn);
+    }
+    cont.appendChild(card);
+  });
+  if (arr.length === 0) cont.innerHTML = "<div class='card'>Belum ada produk.</div>";
+}
+
+function renderTrainings(){
+  const arr = load(TRAIN_KEY, DEFAULT_TRAIN);
+  const list = document.getElementById("trainingList");
+  if (!list) return;
+  list.innerHTML = "";
+  arr.forEach(t => {
+    const li = document.createElement("li");
+    li.textContent = t.name;
+    if (localStorage.getItem("kms_role") === "admin") {
+      const btn = document.createElement("button");
+      btn.className = "adminBtn";
+      btn.style.marginLeft = "8px";
+      btn.textContent = "Hapus";
+      btn.onclick = () => { if(confirm("Hapus materi?")) removeTraining(t.id); };
+      li.appendChild(btn);
+    }
+    list.appendChild(li);
+  });
+  if (arr.length === 0) list.innerHTML = "<li>Belum ada materi pelatihan.</li>";
+}
+
+/* ----------------------
+   Admin CRUD functions
+   ---------------------- */
+function addSOP(){
+  const title = document.getElementById("newSopTitle")?.value?.trim();
+  const content = document.getElementById("newSopContent")?.value?.trim();
+  if (!title || !content) { alert("Judul dan isi SOP wajib diisi."); return; }
+  const arr = load(SOPS_KEY, DEFAULT_SOPS);
+  const id = generateId("sop");
+  arr.push({ id, title, content });
+  save(SOPS_KEY, arr);
+  // clear fields
+  document.getElementById("newSopTitle").value = "";
+  document.getElementById("newSopContent").value = "";
+  renderSOPs();
+  alert("SOP berhasil ditambahkan.");
+}
+function editSOP(id){
+  const arr = load(SOPS_KEY, DEFAULT_SOPS);
+  const idx = arr.findIndex(x => x.id === id);
+  if (idx === -1) return alert("SOP tidak ditemukan.");
+  const newTitle = prompt("Edit judul SOP", arr[idx].title);
+  if (newTitle === null) return;
+  const newContent = prompt("Edit isi SOP (pisahkan baris baru dengan Enter)", arr[idx].content);
+  if (newContent === null) return;
+  arr[idx].title = newTitle.trim() || arr[idx].title;
+  arr[idx].content = newContent.trim() || arr[idx].content;
+  save(SOPS_KEY, arr);
+  renderSOPs();
+  alert("SOP diperbarui.");
+}
+function removeSOP(id){
+  let arr = load(SOPS_KEY, DEFAULT_SOPS);
+  arr = arr.filter(x => x.id !== id);
+  save(SOPS_KEY, arr);
+  renderSOPs();
+  alert("SOP dihapus.");
+}
+
+/* Suppliers */
+function addSupplier(){
+  const name = document.getElementById("supName")?.value?.trim();
+  const loc = document.getElementById("supLoc")?.value?.trim();
+  const contact = document.getElementById("supContact")?.value?.trim();
+  if (!name) { alert("Nama supplier wajib."); return; }
+  const arr = load(SUPP_KEY, DEFAULT_SUPPLIERS);
+  arr.push({ id: generateId("sup"), name, location: loc || "-", contact: contact || "-" });
+  save(SUPP_KEY, arr);
+  document.getElementById("supName").value = "";
+  document.getElementById("supLoc").value = "";
+  document.getElementById("supContact").value = "";
+  renderSuppliers();
+  alert("Supplier ditambahkan.");
+}
+function removeSupplier(id){
+  let arr = load(SUPP_KEY, DEFAULT_SUPPLIERS);
+  arr = arr.filter(x => x.id !== id);
+  save(SUPP_KEY, arr);
+  renderSuppliers();
+  alert("Supplier dihapus.");
+}
+
+/* Products */
+function addProduct(){
+  const name = document.getElementById("prodName")?.value?.trim();
+  if (!name) { alert("Nama produk wajib."); return; }
+  const arr = load(PROD_KEY, DEFAULT_PRODUCTS);
+  arr.push({ id: generateId("prod"), name });
+  save(PROD_KEY, arr);
+  document.getElementById("prodName").value = "";
+  renderProducts();
+  alert("Produk ditambahkan.");
+}
+function removeProduct(id){
+  let arr = load(PROD_KEY, DEFAULT_PRODUCTS);
+  arr = arr.filter(x => x.id !== id);
+  save(PROD_KEY, arr);
+  renderProducts();
+  alert("Produk dihapus.");
+}
+
+/* Trainings */
+function addTraining(){
+  const name = document.getElementById("trainName")?.value?.trim();
+  if (!name) { alert("Nama materi wajib."); return; }
+  const arr = load(TRAIN_KEY, DEFAULT_TRAIN);
+  arr.push({ id: generateId("trn"), name });
+  save(TRAIN_KEY, arr);
+  document.getElementById("trainName").value = "";
+  renderTrainings();
+  alert("Materi pelatihan ditambahkan.");
+}
+function removeTraining(id){
+  let arr = load(TRAIN_KEY, DEFAULT_TRAIN);
+  arr = arr.filter(x => x.id !== id);
+  save(TRAIN_KEY, arr);
+  renderTrainings();
+  alert("Materi dihapus.");
+}
+
+/* ----------------------
+   Navigation / Section show
+   ---------------------- */
+function showSection(e){
+  // e may be synthetic: has preventDefault() and currentTarget
+  if (e && typeof e.preventDefault === "function") e.preventDefault();
+  const link = e && e.currentTarget ? e.currentTarget : null;
+  let sectionName = null;
+  if (link && link.dataset && link.dataset.section) sectionName = link.dataset.section;
+  // if no link passed, default to home
+  if (!sectionName) sectionName = "home";
+
+  // hide all .section
+  document.querySelectorAll(".section").forEach(s => s.classList.add("hidden"));
+
+  // show target if exists
+  const targetEl = document.getElementById(sectionName);
+  if (targetEl) targetEl.classList.remove("hidden");
+
+  // update nav active class
+  document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
+  if (link) link.classList.add("active");
+}
+
+/* ----------------------
+   Toggle SOP detail (alternate use)
+   ---------------------- */
+function toggleSOP(key){
+  const el = document.getElementById("sop-" + key) || document.getElementById("sop_detail_" + key);
+  if (!el) return;
+  el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+/* ----------------------
+   Simple search within SOP titles
+   ---------------------- */
+function filterArticles(){
+  const q = document.getElementById("searchInput")?.value?.toLowerCase() || "";
+  const items = document.querySelectorAll(".sopItem");
+  items.forEach(i => {
+    const txt = i.textContent.toLowerCase();
+    i.style.display = txt.includes(q) ? "block" : "none";
+  });
+}
+
+/* ----------------------
+   Page load - init state
+   ---------------------- */
+document.addEventListener("DOMContentLoaded", function(){
+  ensureDefaults();
+
+  // If already logged in -> show app
+  const role = localStorage.getItem("kms_role");
+  const loginPage = document.getElementById("loginPage");
+  const app = document.getElementById("app");
+  if (role) {
+    if (loginPage) loginPage.classList.add("hidden");
+    if (app) app.classList.remove("hidden");
+    setupRoleUI();
+  } else {
+    if (loginPage) loginPage.classList.remove("hidden");
+    if (app) app.classList.add("hidden");
+  }
+
+  // initial render (even if hidden)
+  renderAll();
+
+  // Attach enter key on password field
+  const pw = document.getElementById("passwordInput");
+  if (pw) pw.addEventListener("keyup", function(e){
+    if (e.key === "Enter") doLogin();
+  });
+
 });
 </script>
-
-</body>
-</html>
