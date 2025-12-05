@@ -1,0 +1,685 @@
+<style>
+/* ============================================
+   RESET & ROOT VARIABLES
+   ============================================ */
+:root{
+    --accent:#1f6feb;
+    --accent-dark:#1557c0;
+
+    --bg:#f7f7fb;
+    --bg-card:#ffffff;
+    --text:#111;
+    --muted:#6b7280;
+
+    --radius:12px;
+    --shadow:0 6px 18px rgba(18,38,63,0.06);
+
+    --transition:0.25s ease;
+}
+
+/* DARK MODE */
+.dark-mode{
+    --bg:#0f172a;
+    --bg-card:#1e293b;
+    --text:#e2e8f0;
+    --muted:#94a3b8;
+    --shadow:0 6px 18px rgba(0,0,0,0.4);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+    overflow-x:hidden;
+    transition:background var(--transition), color var(--transition);
+}
+
+/* ============================================
+   HEADER (STICKY)
+   ============================================ */
+header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:linear-gradient(90deg,var(--accent),var(--accent-dark));
+    padding:16px 22px;
+    color:#fff;
+    box-shadow:0 3px 12px rgba(0,0,0,0.12);
+}
+
+/* Mobile menu button */
+.menuBtn{
+    display:none;
+    background:none;
+    border:none;
+    color:white;
+    font-size:26px;
+    margin-right:14px;
+    cursor:pointer;
+}
+
+@media(max-width:860px){
+    .menuBtn{ display:inline-block; }
+}
+
+/* ============================================
+   WRAPPER
+   ============================================ */
+.wrap{
+    max-width:1100px;
+    margin:20px auto;
+    padding:0 16px;
+    position:relative;
+}
+
+/* ============================================
+   SIDEBAR + COLLAPSIBLE
+   ============================================ */
+.sidebar{
+    width:260px;
+    background:var(--bg-card);
+    border-radius:var(--radius);
+    padding:18px;
+    box-shadow:var(--shadow);
+    height:fit-content;
+    transition:transform .3s ease, background var(--transition);
+}
+
+/* Desktop layout */
+.layout{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    gap:20px;
+}
+
+/* Mobile: sidebar collapsible */
+@media(max-width:860px){
+    .layout{
+        grid-template-columns:1fr;
+    }
+
+    .sidebar{
+        position:fixed;
+        top:0;
+        left:0;
+        height:100vh;
+        padding-top:70px;
+        transform:translateX(-100%);
+        border-radius:0;
+        width:250px;
+        z-index:30;
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    /* Overlay blur when sidebar open */
+    .overlay{
+        position:fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:rgba(0,0,0,0.35);
+        backdrop-filter:blur(2px);
+        display:none;
+        z-index:25;
+    }
+    .overlay.show{
+        display:block;
+    }
+}
+
+/* Sidebar search box */
+.searchBox{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+}
+.searchBox input{
+    flex:1;
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid #dbe2ef;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* Sidebar menu with icons */
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.nav a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:8px;
+    color:var(--text);
+    text-decoration:none;
+    font-weight:600;
+    transition:var(--transition);
+}
+
+.nav a:hover{
+    background:rgba(31,111,235,0.08);
+}
+
+/* Active menu highlight */
+.nav a.active{
+    background:rgba(31,111,235,0.15);
+    color:var(--accent);
+    border-left:4px solid var(--accent);
+    padding-left:8px;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main{
+    min-height:400px;
+    animation:fadeIn .4s ease;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+.card{
+    background:var(--bg-card);
+    padding:18px;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    transition:var(--transition);
+}
+
+/* ============================================
+   PRODUCT HOVER ANIMATION
+   ============================================ */
+.productCard{
+    transition:transform .2s ease, box-shadow .2s ease;
+}
+.productCard:hover{
+    transform:translateY(-6px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* ============================================
+   SOP LIST HOVER
+   ============================================ */
+.sopItem{
+    transition:transform .2s ease, box-shadow .2s ease;
+}
+.sopItem:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* ============================================
+   DARK MODE BUTTON
+   ============================================ */
+.darkToggle{
+    background:#ffffff22;
+    border:1px solid #ffffff44;
+    padding:6px 10px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    color:white;
+    margin-left:auto;
+}
+.darkToggle:hover{
+    background:#ffffff33;
+}
+
+/* ============================================
+   UTILS
+   ============================================ */
+.hidden{ display:none !important; }
+.small{ font-size:13px; color:var(--muted); }
+.meta{ color:var(--muted); font-size:13px; margin-top:10px; }
+
+footer{
+    padding:18px 0;
+    text-align:center;
+    font-size:13px;
+    color:var(--muted);
+}
+</style>
+
+<body>
+
+<!-- Overlay (untuk sidebar collapsible mobile) -->
+<div id="overlay" class="overlay"></div>
+
+<header>
+    <div class="wrap" style="display:flex;align-items:center;gap:12px;">
+        
+        <!-- Tombol menu mobile -->
+        <button class="menuBtn" onclick="toggleSidebar()">☰</button>
+
+        <!-- Logo -->
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <rect width="24" height="24" rx="6" fill="#fff" opacity="0.15"></rect>
+            <path d="M6 12c1.5-3 4.5-4 6-4s4.5 1 6 4"
+                  stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <div>
+            <h1 style="font-size:20px;margin:0;">KMS UMKM Susu Segar</h1>
+            <p style="margin:0;font-size:13px;opacity:.9;">Dokumentasi SOP, Kebersihan, Kualitas & Pelatihan</p>
+        </div>
+
+        <!-- Dark mode toggle -->
+        <button class="darkToggle" onclick="toggleDarkMode()">🌙</button>
+    </div>
+</header>
+
+
+<main class="wrap">
+<div class="layout">
+
+<!-- ============================================================
+     SIDEBAR COLLAPSIBLE 
+     ============================================================ -->
+<aside id="sidebar" class="sidebar">
+
+    <div class="searchBox">
+        <input id="searchInput" placeholder="Cari artikel..." oninput="filterArticles()" />
+        <button class="btn" onclick="clearSearch()">Clear</button>
+    </div>
+
+    <nav class="nav">
+
+        <a data-section="home" onclick="showSection(event)" class="active">
+            🏠 Beranda
+        </a>
+
+        <a data-section="sop" onclick="showSection(event)">
+            📄 SOP Pengolahan
+        </a>
+
+        <a data-section="kualitas" onclick="showSection(event)">
+            🔍 Pemeriksaan Kualitas
+        </a>
+
+        <a data-section="sanitasi" onclick="showSection(event)">
+            🧼 Kebersihan & Sanitasi
+        </a>
+
+        <a data-section="pemasok" onclick="showSection(event)">
+            🚚 Data Pemasok
+        </a>
+
+        <a data-section="produk" onclick="showSection(event)">
+            🛒 Produk
+        </a>
+
+        <a data-section="pelatihan" onclick="showSection(event)">
+            🎓 Pelatihan Karyawan
+        </a>
+
+    </nav>
+
+    <div class="meta">
+        <div>Versi KMS: <strong>1.0</strong></div>
+        <div style="margin-top:6px;">Peran: Admin, Supervisor, Operator</div>
+
+        <div style="margin-top:10px;">
+            <a class="btnGhost" href="#" onclick="printPage()">Cetak / Simpan PDF</a>
+        </div>
+    </div>
+
+</aside>
+
+
+
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<section class="main">
+
+
+<!-- =======================
+     BERANDA
+     ======================= -->
+<article id="home" class="card section">
+    <h2>Beranda</h2>
+    <p class="small">
+        Selamat datang di KMS UMKM Susu Segar. Gunakan menu di kiri untuk membuka SOP, sanitasi, pemasok, pelatihan, dan produk.
+    </p>
+</article>
+
+
+
+<!-- =======================
+     SOP
+     ======================= -->
+<article id="sop" class="card section hidden">
+    <h2>SOP Pengolahan Susu Segar</h2>
+    <p class="small">Klik salah satu SOP untuk membuka detail lengkapnya.</p>
+
+    <div style="margin-top:12px; display:flex; flex-direction:column; gap:12px">
+
+        <div class="card sopItem">
+            <h3><a href="#" onclick="openArticle('sop-receive')">SOP Penerimaan Susu</a></h3>
+            <div class="small">Langkah pemeriksaan awal, suhu, dan pencatatan.</div>
+        </div>
+
+        <div class="card sopItem">
+            <h3><a href="#" onclick="openArticle('sop-filter')">SOP Penyaringan</a></h3>
+            <div class="small">Penyaringan, kebersihan alat, dan pencegahan kontaminasi.</div>
+        </div>
+
+        <div class="card sopItem">
+            <h3><a href="#" onclick="openArticle('sop-pack')">SOP Pengemasan</a></h3>
+            <div class="small">Pengemasan, label, batch number.</div>
+        </div>
+
+    </div>
+</article>
+
+
+
+<!-- =======================
+     KUALITAS
+     ======================= -->
+<article id="kualitas" class="card section hidden">
+    <h2>Pemeriksaan Kualitas</h2>
+    <p class="small">Checklist uji organoleptik & fisik.</p>
+
+    <div class="card">
+        <h4>Checklist Harian</h4>
+        <ol>
+            <li>Suhu ≤ 4°C</li>
+            <li>Bau normal (tidak asam)</li>
+            <li>Visual: putih bersih</li>
+            <li>Pencatatan batch & pemasok</li>
+        </ol>
+    </div>
+</article>
+
+
+
+<!-- =======================
+     SANITASI
+     ======================= -->
+<article id="sanitasi" class="card section hidden">
+    <h2>Kebersihan & Sanitasi</h2>
+
+    <div class="sop">
+
+        <div>
+            <h4>Jadwal Sanitasi</h4>
+            <ul>
+                <li>Pagi: Sterilisasi alat</li>
+                <li>Antar shift: Disinfektan area kerja</li>
+                <li>Akhir hari: Deep cleaning</li>
+            </ul>
+        </div>
+
+        <aside>
+            <div class="card">
+                <h4>Form Kebersihan</h4>
+                <table>
+                    <tr><th>Tanggal</th><th>Area</th><th>Petugas</th></tr>
+                    <tr><td>2025-12-01</td><td>Meja Produksi</td><td>Budi</td></tr>
+                </table>
+            </div>
+        </aside>
+
+    </div>
+</article>
+
+
+
+<!-- =======================
+     PEMASOK
+     ======================= -->
+<article id="pemasok" class="card section hidden">
+    <h2>Data Pemasok</h2>
+
+    <table>
+        <thead>
+            <tr><th>Nama</th><th>Lokasi</th><th>Kontak</th><th>Catatan</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Peternak Sari</td><td>Desa A</td><td>0812-xxx</td><td>Supply harian</td></tr>
+            <tr><td>Kelompok Makmur</td><td>Kec. B</td><td>0821-yyy</td><td>Weekday</td></tr>
+        </tbody>
+    </table>
+</article>
+
+
+
+<!-- =======================
+     PRODUK
+     ======================= -->
+<article id="produk" class="card section hidden">
+    <h2>Produk</h2>
+
+    <div class="gridProducts">
+
+        <div class="productCard">
+            <h4>Susu Segar 500ml</h4>
+            <div class="badge">Pasteurized</div>
+        </div>
+
+        <div class="productCard">
+            <h4>Susu 250ml Botol</h4>
+            <div class="badge">Fresh</div>
+        </div>
+
+        <div class="productCard">
+            <h4>Yoghurt Lokal</h4>
+            <div class="badge">Fermentasi</div>
+        </div>
+
+    </div>
+</article>
+
+
+
+<!-- =======================
+     PELATIHAN
+     ======================= -->
+<article id="pelatihan" class="card section hidden">
+    <h2>Pelatihan Karyawan</h2>
+    <ol>
+        <li>Pemahaman susu aman</li>
+        <li>Cek suhu & kualitas</li>
+        <li>Kebersihan diri</li>
+    </ol>
+</article>
+
+
+
+<!-- =======================
+     POPUP DETAIL SOP
+     ======================= -->
+<div id="articleDetail" class="card hidden">
+    <button onclick="closeArticle()" class="btnGhost" style="float:right">Tutup</button>
+    <div id="articleContent"></div>
+</div>
+
+
+</section>
+</div>
+</main>
+
+
+<footer>
+    <div class="wrap small">© KMS UMKM Susu Segar — Tugas Akhir Semester</div>
+</footer>
+
+<script>
+
+/* =====================================================
+   TOGGLE SIDEBAR (MOBILE)
+   ===================================================== */
+function toggleSidebar(){
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("show");
+}
+
+document.getElementById("overlay").onclick = ()=> toggleSidebar();
+
+
+/* =====================================================
+   DARK MODE TOGGLE
+   ===================================================== */
+function toggleDarkMode(){
+    document.body.classList.toggle("dark-mode");
+
+    const btn = document.querySelector(".darkToggle");
+    btn.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️"
+        : "🌙";
+}
+
+
+/* =====================================================
+   NAVIGASI — SHOW SECTION + ANIMASI
+   ===================================================== */
+function showSection(e){
+    e.preventDefault();
+
+    const clicked = e.currentTarget;
+    const target = clicked.dataset.section;
+
+    // Sembunyikan semua section
+    document.querySelectorAll(".section")
+        .forEach(sec => sec.classList.add("hidden"));
+
+    // Tampilkan section tujuan
+    const activeSec = document.getElementById(target);
+    activeSec.classList.remove("hidden");
+
+    // Animasi fade-in
+    activeSec.style.animation = "fadeIn .4s ease";
+
+    // Update active sidebar
+    document.querySelectorAll(".nav a")
+        .forEach(a => a.classList.remove("active"));
+
+    clicked.classList.add("active");
+
+    // Tutup sidebar otomatis saat mobile
+    if(window.innerWidth < 860){
+        toggleSidebar();
+    }
+
+    closeArticle();
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+
+/* =====================================================
+   BUKA DETAIL SOP
+   ===================================================== */
+function openArticle(key){
+    let html = "";
+
+    if(key === "sop-receive"){
+        html = `
+            <h3>SOP Penerimaan Susu</h3>
+            <ol>
+                <li>Periksa label & dokumen pemasok.</li>
+                <li>Cek bau, warna, dan tekstur.</li>
+                <li>Catat suhu (≤ 6°C).</li>
+                <li>Input data ke sistem.</li>
+            </ol>
+        `;
+    }
+
+    if(key === "sop-filter"){
+        html = `
+            <h3>SOP Penyaringan</h3>
+            <ol>
+                <li>Gunakan saringan steril.</li>
+                <li>Flush pipa sebelum produksi.</li>
+                <li>Gunakan sarung tangan & masker.</li>
+            </ol>
+        `;
+    }
+
+    if(key === "sop-pack"){
+        html = `
+            <h3>SOP Pengemasan</h3>
+            <ol>
+                <li>Sterilisasi botol.</li>
+                <li>Isi sesuai takaran.</li>
+                <li>Segel & tempel label batch.</li>
+            </ol>
+        `;
+    }
+
+    document.getElementById("articleContent").innerHTML = html;
+    document.getElementById("articleDetail").classList.remove("hidden");
+
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function closeArticle(){
+    document.getElementById("articleDetail").classList.add("hidden");
+}
+
+
+/* =====================================================
+   SEARCH / FILTER
+   ===================================================== */
+function filterArticles(){
+    const q = document.getElementById("searchInput").value.toLowerCase();
+
+    document.querySelectorAll(".sopItem")
+        .forEach(item => {
+            item.style.display =
+                item.textContent.toLowerCase().includes(q)
+                ? "block"
+                : "none";
+        });
+
+    // Paksa masuk halaman SOP
+    showSection({ 
+        preventDefault(){},
+        currentTarget: document.querySelector('[data-section="sop"]')
+    });
+}
+
+function clearSearch(){
+    document.getElementById("searchInput").value = "";
+    filterArticles();
+}
+
+
+/* =====================================================
+   CETAK PDF
+   ===================================================== */
+function printPage(){
+    window.print();
+}
+
+
+/* =====================================================
+   DEFAULT VIEW
+   ===================================================== */
+document.addEventListener("DOMContentLoaded", ()=>{
+    document.getElementById("home").classList.remove("hidden");
+});
+
+</script>
