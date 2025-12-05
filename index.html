@@ -1,410 +1,685 @@
-<!doctype html>
-<html lang="id">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>KMS UMKM Susu Segar — Sistem Manajemen Pengetahuan</title>
-<meta name="description" content="Knowledge Management System (KMS) untuk UMKM Susu Segar — SOP, Kebersihan, Pemasok, Produk, Pelatihan."/>
 <style>
-/* ---------- BASIC RESET & LAYOUT ---------- */
+/* ============================================
+   RESET & ROOT VARIABLES
+   ============================================ */
 :root{
---accent:#1f6feb;
---muted:#6b7280;
---bg:#f7f7fb;
---card:#ffffff;
---maxw:1100px;
---radius:10px;
+    --accent:#1f6feb;
+    --accent-dark:#1557c0;
+
+    --bg:#f7f7fb;
+    --bg-card:#ffffff;
+    --text:#111;
+    --muted:#6b7280;
+
+    --radius:12px;
+    --shadow:0 6px 18px rgba(18,38,63,0.06);
+
+    --transition:0.25s ease;
 }
-*{box-sizing:border-box}
+
+/* DARK MODE */
+.dark-mode{
+    --bg:#0f172a;
+    --bg-card:#1e293b;
+    --text:#e2e8f0;
+    --muted:#94a3b8;
+    --shadow:0 6px 18px rgba(0,0,0,0.4);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
 body{
-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-margin:0; background:var(--bg); color:#111;
-line-height:1.45;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+    overflow-x:hidden;
+    transition:background var(--transition), color var(--transition);
 }
+
+/* ============================================
+   HEADER (STICKY)
+   ============================================ */
 header{
-background:linear-gradient(90deg,var(--accent), #0b7cd1);
-color:white; padding:18px 22px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:linear-gradient(90deg,var(--accent),var(--accent-dark));
+    padding:16px 22px;
+    color:#fff;
+    box-shadow:0 3px 12px rgba(0,0,0,0.12);
 }
-.wrap{max-width:var(--maxw); margin:20px auto; padding:0 16px;}
-.brand{display:flex; gap:12px; align-items:center}
-.brand h1{font-size:20px;margin:0}
-.brand p{margin:0;color:rgba(255,255,255,0.9);font-size:13px}
 
-/* ---------- GRID ---------- */
-.layout{display:grid; grid-template-columns: 280px 1fr; gap:18px; margin-top:18px; align-items:start;}
-@media (max-width:860px){ .layout{grid-template-columns:1fr} .sidebar{order:2} .main{order:1} }
+/* Mobile menu button */
+.menuBtn{
+    display:none;
+    background:none;
+    border:none;
+    color:white;
+    font-size:26px;
+    margin-right:14px;
+    cursor:pointer;
+}
 
-/* ---------- SIDEBAR ---------- */
-    .sidebar{
-background:var(--card); padding:16px; border-radius:var(--radius);
-box-shadow:0 6px 18px rgba(18,38,63,0.06);
-height:fit-content;
+@media(max-width:860px){
+    .menuBtn{ display:inline-block; }
+}
+
+/* ============================================
+   WRAPPER
+   ============================================ */
+.wrap{
+    max-width:1100px;
+    margin:20px auto;
+    padding:0 16px;
+    position:relative;
+}
+
+/* ============================================
+   SIDEBAR + COLLAPSIBLE
+   ============================================ */
+.sidebar{
+    width:260px;
+    background:var(--bg-card);
+    border-radius:var(--radius);
+    padding:18px;
+    box-shadow:var(--shadow);
+    height:fit-content;
+    transition:transform .3s ease, background var(--transition);
+}
+
+/* Desktop layout */
+.layout{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    gap:20px;
+}
+
+/* Mobile: sidebar collapsible */
+@media(max-width:860px){
+    .layout{
+        grid-template-columns:1fr;
     }
-    .searchBox{display:flex; gap:8px; margin-bottom:12px}
-    .searchBox input{flex:1;padding:8px 10px;border-radius:8px;border:1px solid #e5e7eb}
-    .nav{margin:8px 0; display:flex; flex-direction:column; gap:6px}
-    .nav a{padding:9px 12px;border-radius:8px;color:var(--accent); text-decoration:none; font-weight:600; background:transparent}
-    .nav a.active{background:linear-gradient(180deg, rgba(31,111,235,0.08), transparent); color:var(--accent)}
-    .meta{font-size:13px;color:var(--muted); margin-top:14px}
 
-    /* ---------- MAIN CONTENT ---------- */
-    .main{min-height:400px}
-    .card{background:var(--card); padding:18px; border-radius:var(--radius); margin-bottom:16px; box-shadow:0 6px 18px rgba(18,38,63,0.04);}
-    h2{margin-top:0}
-    .category-list{display:flex; gap:8px; flex-wrap:wrap}
-    .cat{background:#eef6ff;color:var(--accent); padding:6px 10px;border-radius:999px; font-size:13px}
+    .sidebar{
+        position:fixed;
+        top:0;
+        left:0;
+        height:100vh;
+        padding-top:70px;
+        transform:translateX(-100%);
+        border-radius:0;
+        width:250px;
+        z-index:30;
+    }
 
-    /* ---------- ARTICLE / SOP ---------- */
-    .sop{display:grid; grid-template-columns:1fr 320px; gap:18px;}
-    @media (max-width:860px){ .sop{grid-template-columns:1fr} }
-    .sop ol{padding-left:18px}
-    .checklist{background:#f8fafc;padding:12px;border-radius:8px;border:1px dashed #e6eefb;color:#0b5fb8}
-    .metaSmall{font-size:13px;color:var(--muted)}
+    .sidebar.open{
+        transform:translateX(0);
+    }
 
-    /* ---------- TABLE ---------- */
-    table{width:100%; border-collapse:collapse}
-    table th, table td{padding:8px; border-bottom:1px solid #f1f5f9; text-align:left; font-size:14px}
-    table th{color:var(--muted); font-weight:700}
+    /* Overlay blur when sidebar open */
+    .overlay{
+        position:fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:rgba(0,0,0,0.35);
+        backdrop-filter:blur(2px);
+        display:none;
+        z-index:25;
+    }
+    .overlay.show{
+        display:block;
+    }
+}
 
-    /* ---------- PRODUCTS ---------- */
-    .gridProducts{display:grid; grid-template-columns: repeat(3,1fr); gap:12px}
-    @media (max-width:920px){ .gridProducts{grid-template-columns:repeat(2,1fr)} }
-    @media (max-width:600px){ .gridProducts{grid-template-columns:1fr} }
-    .productCard{padding:12px; border-radius:10px; background:linear-gradient(180deg,#fff,#fbfdff); border:1px solid #eef4ff}
-    .badge{display:inline-block;padding:4px 8px;background:#fff8e6;color:#b35f00;border-radius:8px;font-size:12px}
+/* Sidebar search box */
+.searchBox{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+}
+.searchBox input{
+    flex:1;
+    padding:8px 10px;
+    border-radius:8px;
+    border:1px solid #dbe2ef;
+    background:var(--bg);
+    color:var(--text);
+}
 
-    /* ---------- FOOTER ---------- */
-    footer{padding:14px 0; text-align:center; color:var(--muted); font-size:13px}
+/* Sidebar menu with icons */
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
 
-    /* ---------- UTIL ---------- */
-    .flex{display:flex;gap:12px;align-items:center}
-    .btn{background:var(--accent); color:white; padding:8px 12px;border-radius:8px;text-decoration:none;display:inline-block}
-    .btnGhost{background:transparent;border:1px solid #e2e8f0;color:var(--muted)}
-    .small{font-size:13px;color:var(--muted)}
-    .hidden{display:none}
+.nav a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    border-radius:8px;
+    color:var(--text);
+    text-decoration:none;
+    font-weight:600;
+    transition:var(--transition);
+}
+
+.nav a:hover{
+    background:rgba(31,111,235,0.08);
+}
+
+/* Active menu highlight */
+.nav a.active{
+    background:rgba(31,111,235,0.15);
+    color:var(--accent);
+    border-left:4px solid var(--accent);
+    padding-left:8px;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main{
+    min-height:400px;
+    animation:fadeIn .4s ease;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+.card{
+    background:var(--bg-card);
+    padding:18px;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    transition:var(--transition);
+}
+
+/* ============================================
+   PRODUCT HOVER ANIMATION
+   ============================================ */
+.productCard{
+    transition:transform .2s ease, box-shadow .2s ease;
+}
+.productCard:hover{
+    transform:translateY(-6px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* ============================================
+   SOP LIST HOVER
+   ============================================ */
+.sopItem{
+    transition:transform .2s ease, box-shadow .2s ease;
+}
+.sopItem:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* ============================================
+   DARK MODE BUTTON
+   ============================================ */
+.darkToggle{
+    background:#ffffff22;
+    border:1px solid #ffffff44;
+    padding:6px 10px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+    color:white;
+    margin-left:auto;
+}
+.darkToggle:hover{
+    background:#ffffff33;
+}
+
+/* ============================================
+   UTILS
+   ============================================ */
+.hidden{ display:none !important; }
+.small{ font-size:13px; color:var(--muted); }
+.meta{ color:var(--muted); font-size:13px; margin-top:10px; }
+
+footer{
+    padding:18px 0;
+    text-align:center;
+    font-size:13px;
+    color:var(--muted);
+}
 </style>
-</head>
+
 <body>
+
+<!-- Overlay (untuk sidebar collapsible mobile) -->
+<div id="overlay" class="overlay"></div>
+
 <header>
-    <div class="wrap brand">
-<div>
-        <!-- simple logo mark -->
-        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden><rect width="24" height="24" rx="6" fill="#fff" opacity="0.08"></rect><path d="M6 12c1.5-3 4.5-4 6-4s4.5 1 6 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <div>
-        <h1>KMS UMKM Susu Segar</h1>
-        <p>Dokumentasi SOP, Kebersihan, Data Pemasok & Pelatihan</p>
-    </div>
+    <div class="wrap" style="display:flex;align-items:center;gap:12px;">
+        
+        <!-- Tombol menu mobile -->
+        <button class="menuBtn" onclick="toggleSidebar()">☰</button>
+
+        <!-- Logo -->
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <rect width="24" height="24" rx="6" fill="#fff" opacity="0.15"></rect>
+            <path d="M6 12c1.5-3 4.5-4 6-4s4.5 1 6 4"
+                  stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <div>
+            <h1 style="font-size:20px;margin:0;">KMS UMKM Susu Segar</h1>
+            <p style="margin:0;font-size:13px;opacity:.9;">Dokumentasi SOP, Kebersihan, Kualitas & Pelatihan</p>
+        </div>
+
+        <!-- Dark mode toggle -->
+        <button class="darkToggle" onclick="toggleDarkMode()">🌙</button>
     </div>
 </header>
 
+
 <main class="wrap">
-    <div class="layout">
-    <!-- SIDEBAR -->
-    <aside class="sidebar" aria-label="Navigation sidebar">
-        <div class="searchBox">
-        <input id="searchInput" placeholder="Cari artikel / SOP..." oninput="filterArticles()" />
+<div class="layout">
+
+<!-- ============================================================
+     SIDEBAR COLLAPSIBLE 
+     ============================================================ -->
+<aside id="sidebar" class="sidebar">
+
+    <div class="searchBox">
+        <input id="searchInput" placeholder="Cari artikel..." oninput="filterArticles()" />
         <button class="btn" onclick="clearSearch()">Clear</button>
-        </div>
-
-        <nav class="nav" aria-label="Main categories">
-        <a href="#home" class="active" data-section="home" onclick="showSection(event)">Beranda</a>
-        <a href="#sop" data-section="sop" onclick="showSection(event)">SOP Pengolahan</a>
-        <a href="#kualitas" data-section="kualitas" onclick="showSection(event)">Pemeriksaan Kualitas</a>
-        <a href="#sanitasi" data-section="sanitasi" onclick="showSection(event)">Kebersihan & Sanitasi</a>
-        <a href="#pemasok" data-section="pemasok" onclick="showSection(event)">Data Pemasok</a>
-        <a href="#produk" data-section="produk" onclick="showSection(event)">Produk</a>
-        <a href="#pelatihan" data-section="pelatihan" onclick="showSection(event)">Pelatihan Karyawan</a>
-        </nav>
-
-        <div class="meta">
-        <div class="small">Versi KMS: <strong>1.0 (static)</strong></div>
-        <div class="small" style="margin-top:8px">Peran (polis): Admin, Supervisor, Operator, Viewer</div>
-        <div style="margin-top:12px">
-        <a class="btnGhost" href="#" onclick="printPage()">Cetak / Simpan PDF</a>
-        </div>
-        </div>
-    </aside>
-
-    <!-- MAIN -->
-    <section class="main">
-        <!-- HOME -->
-        <article id="home" class="card section">
-        <h2>Beranda</h2>
-        <p class="small">Selamat datang di KMS UMKM Susu Segar (tanpa brand). Sistem ini mendokumentasikan pengetahuan operasional agar kualitas susu segar terjaga, dan transfer knowledge antar pekerja lebih mudah.</p>
-        <div style="margin-top:12px" class="category-list" aria-hidden>
-        <span class="cat">SOP</span><span class="cat">Kualitas</span><span class="cat">Sanitasi</span><span class="cat">Pemasok</span><span class="cat">Produk</span><span class="cat">Pelatihan</span>
-        </div>
-        </article>
-
-        <!-- SOP -->
-        <article id="sop" class="card section hidden">
-        <h2>SOP Pengolahan Susu Segar</h2>
-        <p class="metaSmall">Daftar SOP inti untuk menjaga mutu. Klik judul untuk membuka detail.</p>
-
-        <!-- list of SOP items -->
-        <div style="margin-top:12px; display:flex;flex-direction:column;gap:12px">
-        <div class="sopItem card">
-        <h3 style="margin:0"><a href="#" onclick="openArticle('sop-receive')">SOP Penerimaan Susu</a></h3>
-        <div class="small">Dokumentasi langkah penerimaan, inspeksi awal, sampel uji, pencatatan</div>
-        </div>
-
-        <div class="sopItem card">
-        <h3 style="margin:0"><a href="#" onclick="openArticle('sop-filter')">SOP Penyaringan & Penanganan</a></h3>
-        <div class="small">Prosedur saringan, kontrol suhu, dan pencegahan kontaminasi</div>
-        </div>
-
-        <div class="sopItem card">
-        <h3 style="margin:0"><a href="#" onclick="openArticle('sop-pack')">SOP Pengemasan & Pelabelan</a></h3>
-        <div class="small">Langkah pengemasan, label, dan pengecekan akhir</div>
-        </div>
-        </div>
-        </article>
-
-        <!-- QUALITY -->
-        <article id="kualitas" class="card section hidden">
-        <h2>Pemeriksaan Kualitas</h2>
-        <p class="metaSmall">Checklist dan prosedur pengujian sederhana (organoleptik, suhu, bau, warna)</p>
-
-        <div style="margin-top:12px">
-            <div class="card">
-            <h4>Checklist Uji Mutu Harian</h4>
-            <ol>
-                <li>Periksa suhu penerimaan & penyimpanan (target ≤ 4°C)</li>
-                <li>Cek bau & rasa (organoleptik) — catat jika ada anomali</li>
-                <li>Visual check: warna & keberadaan partikel</li>
-                <li>Catat nomor batch & pemasok</li>
-        </ol>
-        <div style="margin-top:10px" class="checklist">Catatan: Jika ada keganjilan, blokir batch dan laporkan ke supervisor.</div>
-        </div>
-        </div>
-        </article>
-
-        <!-- SANITATION -->
-        <article id="sanitasi" class="card section hidden">
-        <h2>Kebersihan & Sanitasi</h2>
-        <p class="metaSmall">Standar rutinitas pembersihan guna mencegah kontaminasi</p>
-
-        <div class="sop">
-            <div>
-            <h4>Jadwal Sanitasi Harian</h4>
-            <ul>
-                <li>Pagi: Sterilisasi alat saringan, botol kosong, permukaan kerja</li>
-                <li>Antar shift: Lap dan disinfektan pada area kontak tinggi</li>
-                <li>Akhir hari: Pembersihan mendalam dan pengeringan</li>
-            </ul>
-
-        <h4>Prosedur Sterilisasi Botol</h4>
-            <ol>
-                <li>Cuci awal dengan deterjen netral</li>
-                <li>Sterilisasi dengan air panas (≥80°C) atau steam 5 menit</li>
-                <li>Biarkan mengering di rak steril sebelum pengemasan</li>
-              </ol>
-            </div>
-
-            <aside>
-              <div class="card">
-                <h4>Form Kebersihan (contoh)</h4>
-                <table>
-                  <thead><tr><th>Tanggal</th><th>Area</th><th>Pelaksana</th></tr></thead>
-                  <tbody>
-                    <tr><td>2025-12-01</td><td>Meja produksi</td><td>Budi</td></tr>
-                    <tr><td>2025-12-01</td><td>Rak botol</td><td>Siti</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </aside>
-          </div>
-        </article>
-
-        <!-- SUPPLIERS -->
-        <article id="pemasok" class="card section hidden">
-          <h2>Data Pemasok</h2>
-          <p class="small">Daftar pemasok susu yang diverifikasi. Update data apabila ada perubahan.</p>
-
-          <div style="margin-top:12px">
-            <table aria-label="Data Pemasok">
-              <thead><tr><th>Nama Pemasok</th><th>Lokasi</th><th>Kontak</th><th>Catatan</th></tr></thead>
-              <tbody id="supplierTable">
-                <tr><td>Peternak Sari</td><td>Desa A</td><td>0812-xxx-xxxx</td><td>Supply harian, kualitas konsisten</td></tr>
-                <tr><td>Kelompok Susu Makmur</td><td>Kecamatan B</td><td>0821-yyy-yyyy</td><td>Hanya pasokan weekday</td></tr>
-              </tbody>
-            </table>
-            <p class="small" style="margin-top:8px">Catatan: Untuk laporan TAS, sertakan minimal 2 profil pemasok.</p>
-          </div>
-        </article>
-
-        <!-- PRODUCTS -->
-        <article id="produk" class="card section hidden">
-          <h2>Produk UMKM</h2>
-          <p class="small">Profil produk dan informasi label</p>
-
-          <div style="margin-top:12px" class="gridProducts">
-            <div class="productCard">
-              <h4>Susu Segar 500ml</h4>
-              <div class="small">Komposisi: Susu sapi murni, tidak ada pengawet</div>
-              <div style="margin-top:8px"><span class="badge">Pasteurized</span></div>
-              <ul style="margin-top:8px">
-                <li>Energi: 65 kcal / 100ml</li>
-                <li>Protein: 3.2 g</li>
-                <li>Fett: 3.5 g</li>
-              </ul>
-              <div style="margin-top:8px"><small class="small">Label wajib: Tanggal produksi, Nomor batch, Kode pemasok</small></div>
-            </div>
-
-            <div class="productCard">
-              <h4>Susu Segar 250ml (Botol)</h4>
-              <div class="small">Komposisi: Susu + vitamin (optional)</div>
-              <div style="margin-top:8px"><span class="badge">Fresh</span></div>
-              <ul style="margin-top:8px"><li>Energi: 70 kcal / 100ml</li><li>Protein: 3.1 g</li></ul>
-            </div>
-
-            <div class="productCard">
-              <h4>Yoghurt Lokal 200g</h4>
-              <div class="small">Produk turunan (opsional)</div>
-              <div style="margin-top:8px"><span class="badge">Ferment</span></div>
-              <ul style="margin-top:8px"><li>Energi: 95 kcal / porsi</li></ul>
-            </div>
-          </div>
-        </article>
-
-        <!-- TRAINING -->
-        <article id="pelatihan" class="card section hidden">
-          <h2>Pelatihan Karyawan</h2>
-          <p class="small">Modul dasar untuk onboarding operator produksi</p>
-
-          <div style="margin-top:12px">
-            <h4>Modul 1 — Penanganan Susu Aman</h4>
-            <ol>
-              <li>Pengenalan risiko mikrobiologi</li>
-              <li>Pemeriksaan visual & suhu</li>
-              <li>Standar kebersihan tangan & pakaian</li>
-              <li>Cara membaca label & batch</li>
-            </ol>
-
-            <h4 style="margin-top:10px">Video Pelatihan (placeholder)</h4>
-            <!-- placeholder: replace with actual video URL if you host one -->
-            <div style="background:#111; color:#fff; padding:14px; border-radius:8px; text-align:center;">Video training: (tambahkan link video)</div>
-          </div>
-        </article>
-
-        <!-- ARTICLE DETAIL POPUP (for SOP detail) -->
-        <div id="articleDetail" class="card hidden" aria-hidden="true">
-          <button onclick="closeArticle()" style="float:right" class="btnGhost">Tutup</button>
-          <div id="articleContent"></div>
-        </div>
-
-      </section>
     </div>
-  </main>
 
-  <footer>
-    <div class="wrap small">© KMS UMKM Susu Segar — Tugas Akhir Semester. Dibuat untuk tujuan akademik. Jelaskan keterbatasan implementasi (static HTML) dalam laporan.</div>
-  </footer>
+    <nav class="nav">
 
-  <script>
-    /* ===========================
-       Minimal client-side behavior
-       - Section navigation
-       - Search filter for titles/content
-       - Opening article details
-       - Print/PDF
-       =========================== */
+        <a data-section="home" onclick="showSection(event)" class="active">
+            🏠 Beranda
+        </a>
 
-    // show section and highlight active link
-    function showSection(e){
-      if(e) e.preventDefault();
-      var target = (e && e.target) ? e.target : null;
-      var section = target ? target.dataset.section : 'home';
-      document.querySelectorAll('.section').forEach(el=> el.classList.add('hidden'));
-      var el = document.getElementById(section);
-      if(el) el.classList.remove('hidden');
-      // active link
-      document.querySelectorAll('.nav a').forEach(a=> a.classList.remove('active'));
-      if(target) target.classList.add('active');
-      // hide article detail when switching
-      closeArticle();
-      window.scrollTo({top:0,behavior:'smooth'});
+        <a data-section="sop" onclick="showSection(event)">
+            📄 SOP Pengolahan
+        </a>
+
+        <a data-section="kualitas" onclick="showSection(event)">
+            🔍 Pemeriksaan Kualitas
+        </a>
+
+        <a data-section="sanitasi" onclick="showSection(event)">
+            🧼 Kebersihan & Sanitasi
+        </a>
+
+        <a data-section="pemasok" onclick="showSection(event)">
+            🚚 Data Pemasok
+        </a>
+
+        <a data-section="produk" onclick="showSection(event)">
+            🛒 Produk
+        </a>
+
+        <a data-section="pelatihan" onclick="showSection(event)">
+            🎓 Pelatihan Karyawan
+        </a>
+
+    </nav>
+
+    <div class="meta">
+        <div>Versi KMS: <strong>1.0</strong></div>
+        <div style="margin-top:6px;">Peran: Admin, Supervisor, Operator</div>
+
+        <div style="margin-top:10px;">
+            <a class="btnGhost" href="#" onclick="printPage()">Cetak / Simpan PDF</a>
+        </div>
+    </div>
+
+</aside>
+
+
+
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<section class="main">
+
+
+<!-- =======================
+     BERANDA
+     ======================= -->
+<article id="home" class="card section">
+    <h2>Beranda</h2>
+    <p class="small">
+        Selamat datang di KMS UMKM Susu Segar. Gunakan menu di kiri untuk membuka SOP, sanitasi, pemasok, pelatihan, dan produk.
+    </p>
+</article>
+
+
+
+<!-- =======================
+     SOP
+     ======================= -->
+<article id="sop" class="card section hidden">
+    <h2>SOP Pengolahan Susu Segar</h2>
+    <p class="small">Klik salah satu SOP untuk membuka detail lengkapnya.</p>
+
+    <div style="margin-top:12px; display:flex; flex-direction:column; gap:12px">
+
+        <div class="card sopItem">
+            <h3><a href="#" onclick="openArticle('sop-receive')">SOP Penerimaan Susu</a></h3>
+            <div class="small">Langkah pemeriksaan awal, suhu, dan pencatatan.</div>
+        </div>
+
+        <div class="card sopItem">
+            <h3><a href="#" onclick="openArticle('sop-filter')">SOP Penyaringan</a></h3>
+            <div class="small">Penyaringan, kebersihan alat, dan pencegahan kontaminasi.</div>
+        </div>
+
+        <div class="card sopItem">
+            <h3><a href="#" onclick="openArticle('sop-pack')">SOP Pengemasan</a></h3>
+            <div class="small">Pengemasan, label, batch number.</div>
+        </div>
+
+    </div>
+</article>
+
+
+
+<!-- =======================
+     KUALITAS
+     ======================= -->
+<article id="kualitas" class="card section hidden">
+    <h2>Pemeriksaan Kualitas</h2>
+    <p class="small">Checklist uji organoleptik & fisik.</p>
+
+    <div class="card">
+        <h4>Checklist Harian</h4>
+        <ol>
+            <li>Suhu ≤ 4°C</li>
+            <li>Bau normal (tidak asam)</li>
+            <li>Visual: putih bersih</li>
+            <li>Pencatatan batch & pemasok</li>
+        </ol>
+    </div>
+</article>
+
+
+
+<!-- =======================
+     SANITASI
+     ======================= -->
+<article id="sanitasi" class="card section hidden">
+    <h2>Kebersihan & Sanitasi</h2>
+
+    <div class="sop">
+
+        <div>
+            <h4>Jadwal Sanitasi</h4>
+            <ul>
+                <li>Pagi: Sterilisasi alat</li>
+                <li>Antar shift: Disinfektan area kerja</li>
+                <li>Akhir hari: Deep cleaning</li>
+            </ul>
+        </div>
+
+        <aside>
+            <div class="card">
+                <h4>Form Kebersihan</h4>
+                <table>
+                    <tr><th>Tanggal</th><th>Area</th><th>Petugas</th></tr>
+                    <tr><td>2025-12-01</td><td>Meja Produksi</td><td>Budi</td></tr>
+                </table>
+            </div>
+        </aside>
+
+    </div>
+</article>
+
+
+
+<!-- =======================
+     PEMASOK
+     ======================= -->
+<article id="pemasok" class="card section hidden">
+    <h2>Data Pemasok</h2>
+
+    <table>
+        <thead>
+            <tr><th>Nama</th><th>Lokasi</th><th>Kontak</th><th>Catatan</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Peternak Sari</td><td>Desa A</td><td>0812-xxx</td><td>Supply harian</td></tr>
+            <tr><td>Kelompok Makmur</td><td>Kec. B</td><td>0821-yyy</td><td>Weekday</td></tr>
+        </tbody>
+    </table>
+</article>
+
+
+
+<!-- =======================
+     PRODUK
+     ======================= -->
+<article id="produk" class="card section hidden">
+    <h2>Produk</h2>
+
+    <div class="gridProducts">
+
+        <div class="productCard">
+            <h4>Susu Segar 500ml</h4>
+            <div class="badge">Pasteurized</div>
+        </div>
+
+        <div class="productCard">
+            <h4>Susu 250ml Botol</h4>
+            <div class="badge">Fresh</div>
+        </div>
+
+        <div class="productCard">
+            <h4>Yoghurt Lokal</h4>
+            <div class="badge">Fermentasi</div>
+        </div>
+
+    </div>
+</article>
+
+
+
+<!-- =======================
+     PELATIHAN
+     ======================= -->
+<article id="pelatihan" class="card section hidden">
+    <h2>Pelatihan Karyawan</h2>
+    <ol>
+        <li>Pemahaman susu aman</li>
+        <li>Cek suhu & kualitas</li>
+        <li>Kebersihan diri</li>
+    </ol>
+</article>
+
+
+
+<!-- =======================
+     POPUP DETAIL SOP
+     ======================= -->
+<div id="articleDetail" class="card hidden">
+    <button onclick="closeArticle()" class="btnGhost" style="float:right">Tutup</button>
+    <div id="articleContent"></div>
+</div>
+
+
+</section>
+</div>
+</main>
+
+
+<footer>
+    <div class="wrap small">© KMS UMKM Susu Segar — Tugas Akhir Semester</div>
+</footer>
+
+<script>
+
+/* =====================================================
+   TOGGLE SIDEBAR (MOBILE)
+   ===================================================== */
+function toggleSidebar(){
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("show");
+}
+
+document.getElementById("overlay").onclick = ()=> toggleSidebar();
+
+
+/* =====================================================
+   DARK MODE TOGGLE
+   ===================================================== */
+function toggleDarkMode(){
+    document.body.classList.toggle("dark-mode");
+
+    const btn = document.querySelector(".darkToggle");
+    btn.textContent = document.body.classList.contains("dark-mode")
+        ? "☀️"
+        : "🌙";
+}
+
+
+/* =====================================================
+   NAVIGASI — SHOW SECTION + ANIMASI
+   ===================================================== */
+function showSection(e){
+    e.preventDefault();
+
+    const clicked = e.currentTarget;
+    const target = clicked.dataset.section;
+
+    // Sembunyikan semua section
+    document.querySelectorAll(".section")
+        .forEach(sec => sec.classList.add("hidden"));
+
+    // Tampilkan section tujuan
+    const activeSec = document.getElementById(target);
+    activeSec.classList.remove("hidden");
+
+    // Animasi fade-in
+    activeSec.style.animation = "fadeIn .4s ease";
+
+    // Update active sidebar
+    document.querySelectorAll(".nav a")
+        .forEach(a => a.classList.remove("active"));
+
+    clicked.classList.add("active");
+
+    // Tutup sidebar otomatis saat mobile
+    if(window.innerWidth < 860){
+        toggleSidebar();
     }
 
-    // open article (by id keys)
-    function openArticle(key){
-      var contentEl = document.getElementById('articleContent');
-      var html = '';
-      if(key === 'sop-receive'){
-        html = '<h3>SOP Penerimaan Susu</h3>' +
-          '<p class="metaSmall">Tujuan: memastikan bahan baku memenuhi standar.</p>' +
-          '<ol>' +
-          '<li>Terima susu dari pemasok, periksa label & dokumen pengiriman.</li>' +
-          '<li>Ambil sampel organoleptik: bau, warna, rasa.</li>' +
-          '<li>Catat suhu kedatangan; jika >6°C lakukan pendinginan segera atau tolak.</li>' +
-          '<li>Input data pemasok dan nomor batch ke log penerimaan.</li>' +
-          '<li>Jika ada anomali: tandai batch, simpan terpisah, laporkan ke supervisor.</li>' +
-          '</ol>' +
-          '<div class="checklist">Formulir contoh: Tanggal | Pemasok | Suhu | Catatan | Status</div>';
-      } else if(key === 'sop-filter'){
-        html = '<h3>SOP Penyaringan & Penanganan</h3>' +
-          '<ol>' +
-          '<li>Gunakan saringan 200 micron untuk hilangkan partikel besar.</li>' +
-          '<li>Jaga aliran pipa bersih, lakukan flush sebelum produksi.</li>' +
-          '<li>Pastikan pegawai memakai sarung tangan dan penutup kepala.</li>' +
-          '<li>Catat nomor saringan & waktu pemakaian.</li>' +
-          '</ol>';
-      } else if(key === 'sop-pack'){
-        html = '<h3>SOP Pengemasan & Pelabelan</h3>' +
-          '<ol>' +
-          '<li>Botol steril: cek visual dan suhu.</li>' +
-          '<li>Isi sesuai takaran, segel tutup, dan tempel label produksi.</li>' +
-          '<li>Periksa batch number & tanggal kadaluarsa.</li>' +
-          '<li>Simpan di rak pendingin, lakukan pengecekan akhir.</li>' +
-          '</ol>';
-      } else {
-        html = '<p>Artikel tidak ditemukan.</p>';
-      }
-      contentEl.innerHTML = html;
-      document.getElementById('articleDetail').classList.remove('hidden');
-      document.getElementById('articleDetail').setAttribute('aria-hidden','false');
-      // scroll to detail
-      document.getElementById('articleDetail').scrollIntoView({behavior:'smooth'});
+    closeArticle();
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+
+/* =====================================================
+   BUKA DETAIL SOP
+   ===================================================== */
+function openArticle(key){
+    let html = "";
+
+    if(key === "sop-receive"){
+        html = `
+            <h3>SOP Penerimaan Susu</h3>
+            <ol>
+                <li>Periksa label & dokumen pemasok.</li>
+                <li>Cek bau, warna, dan tekstur.</li>
+                <li>Catat suhu (≤ 6°C).</li>
+                <li>Input data ke sistem.</li>
+            </ol>
+        `;
     }
 
-    function closeArticle(){
-      var det = document.getElementById('articleDetail');
-      if(det){ det.classList.add('hidden'); det.setAttribute('aria-hidden','true'); }
+    if(key === "sop-filter"){
+        html = `
+            <h3>SOP Penyaringan</h3>
+            <ol>
+                <li>Gunakan saringan steril.</li>
+                <li>Flush pipa sebelum produksi.</li>
+                <li>Gunakan sarung tangan & masker.</li>
+            </ol>
+        `;
     }
 
-    // Simple search: filter by visible article titles and categories
-    function filterArticles(){
-      var q = document.getElementById('searchInput').value.trim().toLowerCase();
-      if(!q){ // reset
-        document.querySelectorAll('.sopItem').forEach(i=> i.style.display='block');
-        document.querySelectorAll('.section').forEach(s=> s.style.display = '');
-        return;
-      }
-      // hide all main sections then show matches
-      document.querySelectorAll('.sopItem').forEach(i=>{
-        var txt = i.textContent.toLowerCase();
-        if(txt.indexOf(q) !== -1) i.style.display='block'; else i.style.display='none';
-      });
-      // show the SOP section if any result, else show home with message
-      var any = Array.from(document.querySelectorAll('.sopItem')).some(i=> i.style.display !== 'none');
-      document.querySelectorAll('.section').forEach(s=> s.classList.add('hidden'));
-      if(any){ document.getElementById('sop').classList.remove('hidden'); }
-      else {
-        document.getElementById('home').classList.remove('hidden');
-      }
+    if(key === "sop-pack"){
+        html = `
+            <h3>SOP Pengemasan</h3>
+            <ol>
+                <li>Sterilisasi botol.</li>
+                <li>Isi sesuai takaran.</li>
+                <li>Segel & tempel label batch.</li>
+            </ol>
+        `;
     }
 
-    function clearSearch(){
-      document.getElementById('searchInput').value='';
-      filterArticles();
-    }
+    document.getElementById("articleContent").innerHTML = html;
+    document.getElementById("articleDetail").classList.remove("hidden");
 
-    function printPage(){ window.print(); }
+    window.scrollTo({top:0, behavior:"smooth"});
+}
 
-    // initial state: show home
-    document.addEventListener('DOMContentLoaded', function(){ showSection(null); });
-  </script>
-</body>
-</html>
+function closeArticle(){
+    document.getElementById("articleDetail").classList.add("hidden");
+}
+
+
+/* =====================================================
+   SEARCH / FILTER
+   ===================================================== */
+function filterArticles(){
+    const q = document.getElementById("searchInput").value.toLowerCase();
+
+    document.querySelectorAll(".sopItem")
+        .forEach(item => {
+            item.style.display =
+                item.textContent.toLowerCase().includes(q)
+                ? "block"
+                : "none";
+        });
+
+    // Paksa masuk halaman SOP
+    showSection({ 
+        preventDefault(){},
+        currentTarget: document.querySelector('[data-section="sop"]')
+    });
+}
+
+function clearSearch(){
+    document.getElementById("searchInput").value = "";
+    filterArticles();
+}
+
+
+/* =====================================================
+   CETAK PDF
+   ===================================================== */
+function printPage(){
+    window.print();
+}
+
+
+/* =====================================================
+   DEFAULT VIEW
+   ===================================================== */
+document.addEventListener("DOMContentLoaded", ()=>{
+    document.getElementById("home").classList.remove("hidden");
+});
+
+</script>
