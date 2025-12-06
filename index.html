@@ -31,13 +31,15 @@ body{
 }
 
 /* ============================================================
-    LOGIN PAGE — NEW DESIGN
+    LOGIN PAGE — NEW DESIGN (BACKGROUND KULIT SAPI)
 ============================================================ */
 #loginPage {
     width:100%;
     height:100vh;
-    background:url('https://images.unsplash.com/photo-1550581190-9c1c48d21d6c?auto=format&fit=crop&w=1650&q=80');
-    background-size:cover;
+    /* Ganti background dengan motif kulit sapi hitam putih */
+    background:url('img/sapiiii.jpg'); /* Pola abstrak hitam putih */
+    background-size:150px; /* Ukuran pola lebih kecil agar terlihat seperti kulit */
+    background-repeat: repeat;
     background-position:center;
     display:flex;
     justify-content:center;
@@ -215,6 +217,34 @@ header{
     display:none;
 }
 
+/* Varian Menu Styling */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+.menu-item {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.menu-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 8px;
+    border: 3px solid var(--accent2);
+}
+.menu-item h4 {
+    margin: 0;
+    font-size: 1.1em;
+    color: #124b94;
+}
+
 /* ============================================================
     ADMIN PANEL FEATURES
 ============================================================ */
@@ -301,7 +331,7 @@ header{
     <div id="appContainer">
 
         <aside class="sidebar">
-            <nav>
+            <nav id="sidebarNav">
                 <a data-section="home" class="active" onclick="showSection(event)">Beranda</a>
                 <a data-section="sop" onclick="showSection(event)">SOP Pengolahan</a>
                 <a data-section="kualitas" onclick="showSection(event)">Pemeriksaan Kualitas</a>
@@ -326,6 +356,74 @@ header{
             <section id="home" class="card section">
                 <h2>Beranda</h2>
                 <p>Selamat datang di KMS UMKM Susu Segar. Sistem ini berisi dokumentasi SOP, Sanitasi, Kualitas, Supplier, Produk, dan Pelatihan.</p>
+                
+                <hr style="margin: 20px 0;">
+                
+                <h3>🥤 Varian Menu UMKM Susu Segar</h3>
+                
+                <h4 style="margin-top: 15px; color: var(--accent);">Pilihan Ice/Hot</h4>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <img src="img/sugarori.jpg" alt="Original">
+                        <h4>Original</h4>
+                        <small>Ice / Hot</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/sugarcok.jpg" alt="Coklat">
+                        <h4>Coklat</h4>
+                        <small>Ice / Hot</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/sugarstraw.jpg" alt="Strawberry">
+                        <h4>Strawberry</h4>
+                        <small>Ice / Hot</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/sugarmilo.jpg" alt="Milo">
+                        <h4>Milo</h4>
+                        <small>Ice / Hot</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/sugarbengbeng.jpg" alt="Beng-Beng">
+                        <h4>Beng-Beng</h4>
+                        <small>Ice / Hot</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/sugartaro.jpg" alt="Taro">
+                        <h4>Taro</h4>
+                        <small>Ice / Hot</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/sugargreen.jpg" alt="Green Tea">
+                        <h4>Green Tea</h4>
+                        <small>Ice / Hot</small>
+                    </div>
+                </div>
+
+                <h4 style="margin-top: 25px; color: var(--accent);">Pilihan Blender</h4>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <img src="img/blendoreo.jpg" alt="Choco Oreo">
+                        <h4>Choco Oreo</h4>
+                        <small>Blender</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/blendblue.jpg" alt="Vanilla Blue">
+                        <h4>Vanilla Blue</h4>
+                        <small>Blender</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/blenddurian.jpg" alt="Durian">
+                        <h4>Durian</h4>
+                        <small>Blender</small>
+                    </div>
+                    <div class="menu-item">
+                        <img src="img/blendmango.jpg" alt="Mangga">
+                        <h4>Mangga</h4>
+                        <small>Blender</small>
+                    </div>
+                </div>
+
             </section>
 
 
@@ -367,7 +465,8 @@ header{
                 <h2>Data Pemasok</h2>
                 <table border="1" width="100%" cellpadding="6">
                     <thead>
-                        <tr><th>Nama</th><th>Lokasi</th><th>Kontak</th></tr>
+                        <tr><th>Nama</th><th>Lokasi</th><th>Kontak</th>
+                        <th id="supplierActionHeader" style="display:none;">Aksi</th></tr>
                     </thead>
                     <tbody id="supplierList"></tbody>
                 </table>
@@ -509,7 +608,7 @@ function ensureDefaults(){
 }
 
 /* ----------------------
-    LOGIN / LOGOUT (PERBAIKAN FUNGSI LOGIN DENGAN RELOAD)
+    LOGIN / LOGOUT 
     ---------------------- */
 function doLogin(){
     const roleRaw = document.getElementById("roleSelect")?.value || "";
@@ -532,13 +631,26 @@ function doLogin(){
         return;
     }
 
-    // Login sukses: Simpan role dan muat ulang halaman
+    // Login sukses: Simpan role, tampilkan UI, dan bersihkan input
     localStorage.setItem("kms_role", role);
-    location.reload(); 
+    
+    // Sembunyikan login page dan tampilkan aplikasi
+    const loginPage = document.getElementById("loginPage");
+    const app = document.getElementById("app"); 
+    
+    if (loginPage) loginPage.style.display = 'none';
+    if (app) app.classList.remove("hidden");
+
+    // Bersihkan input password
+    document.getElementById("passwordInput").value = "";
+
+    // Setup UI berdasarkan role
+    setupRoleUI(); 
 }
 
 function logout(){
     localStorage.removeItem("kms_role");
+    // Reload saat logout tetap aman (kembali ke login page)
     location.reload();
 }
 
@@ -557,6 +669,10 @@ function setupRoleUI(){
         roleBadge.style.display = "inline-block";
         roleBadge.textContent = role.toUpperCase();
     }
+    
+    // Tampilkan header Aksi di tabel Supplier hanya jika Admin
+    const supHeader = document.getElementById("supplierActionHeader");
+    if (supHeader) supHeader.style.display = role === "admin" ? "table-cell" : "none";
 
     // admin menu link show/hide
     const menuAdmin = document.getElementById("menu-admin");
@@ -579,7 +695,7 @@ function setupRoleUI(){
         if (el) el.style.display = "none";
     });
 
-    // configure per role (MODIFIKASI: Menambahkan role berdasarkan tugas)
+    // configure per role
     if (role === "admin") {
         // Admin melihat SEMUA
         Object.values(navMap).forEach(el => { if (el) el.style.display = "block"; });
@@ -598,10 +714,11 @@ function setupRoleUI(){
     // render content lists
     renderAll();
 
-    // default to home
+    // Reset Active Class dan Pindah ke Beranda
+    document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
     const homeLink = document.querySelector('a[data-section="home"]');
     if (homeLink) {
-        // show section programmatically
+        homeLink.classList.add("active"); // Set active class di Beranda
         showSection({ preventDefault(){}, currentTarget: homeLink });
     }
 }
@@ -653,12 +770,6 @@ function renderSOPs(){
 
         card.appendChild(title);
 
-        // small description (first line)
-        const small = document.createElement("div");
-        small.className = "small";
-        small.textContent = s.content.split(/\n+/)[0] || "";
-        card.appendChild(small);
-
         // if admin, show edit/delete buttons
         if (role === "admin") {
             const actions = document.createElement("div");
@@ -708,18 +819,26 @@ function renderSuppliers(){
             btnDel.className = "adminBtn";
             btnDel.style.marginLeft = "8px";
             btnDel.textContent = "Hapus";
+            btnDel.style.background = "#d62828";
             btnDel.onclick = () => { if(confirm("Hapus pemasok?")) removeSupplier(s.id); };
             tdActions.appendChild(btnDel);
             tr.appendChild(tdActions);
-        } else {
-             tr.appendChild(document.createElement("td")); // Tambahkan sel kosong jika tidak ada aksi
         }
-
+        
+        // Tambahkan kolom kosong jika bukan admin, untuk menjaga jumlah kolom jika header Aksi ada
+        const colCount = tbody.closest('table').querySelectorAll('thead th').length;
+        if (role !== "admin" && colCount === 4) {
+            tr.appendChild(document.createElement("td"));
+        }
+        
         tbody.appendChild(tr);
     });
+    
+    // Perbaikan: Pastikan colCount dihitung dengan benar
+    const headerRow = tbody.closest('table')?.querySelector('thead tr');
+    const colspan = headerRow ? headerRow.querySelectorAll('th').length : 3;
+
     if (arr.length === 0) {
-        // Sesuaikan colspan berdasarkan role (jika admin 4 kolom, jika bukan admin 3 kolom)
-        const colspan = (role === 'admin') ? 4 : 3; 
         tbody.innerHTML = `<tr><td colspan='${colspan}'>Belum ada pemasok.</td></tr>`;
     }
 }
@@ -775,7 +894,7 @@ function renderTrainings(){
 }
 
 /* ----------------------
-    Admin CRUD functions (Tidak ada perubahan signifikan, sudah bagus)
+    Admin CRUD functions
     ---------------------- */
 function addSOP(){
     const title = document.getElementById("newSopTitle")?.value?.trim();
@@ -892,8 +1011,11 @@ function showSection(e){
     if (targetEl) targetEl.classList.remove("hidden");
 
     // update nav active class
-    document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
-    if (link) link.classList.add("active");
+    // Jika dipanggil dari DOMContentLoaded, active class sudah diurus di setupRoleUI
+    if (e && e.currentTarget) {
+        document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
+        if (link) link.classList.add("active");
+    }
 }
 
 /* ----------------------
@@ -908,11 +1030,12 @@ document.addEventListener("DOMContentLoaded", function(){
     const app = document.getElementById("app");
     
     if (role) {
-        if (loginPage) loginPage.classList.add("hidden");
+        // Perbaikan: Gunakan style.display='none' untuk loginPage saat load
+        if (loginPage) loginPage.style.display = 'none';
         if (app) app.classList.remove("hidden");
         setupRoleUI();
     } else {
-        if (loginPage) loginPage.classList.remove("hidden");
+        if (loginPage) loginPage.style.display = 'flex'; // Tampilkan login saat belum ada role
         if (app) app.classList.add("hidden");
     }
 
