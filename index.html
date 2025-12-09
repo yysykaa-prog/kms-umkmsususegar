@@ -193,6 +193,20 @@ header{
     background:#e7f0ff;
 }
 
+.sidebar nav a {
+    transition: 0.25s ease;
+}
+.sidebar nav a:hover {
+    background: #dceaff;
+    transform: translateX(4px);
+}
+.sidebar nav a.active {
+    background: #e7f0ff;
+    font-weight: 700;
+    transform: translateX(6px);
+    border-left: 4px solid var(--accent);
+}
+
 /* ============================================================
     CONTENT AREA
 ============================================================ */
@@ -536,9 +550,9 @@ header{
 <script>
 /* ===========================
     KMS — Role Access + Admin CRUD
-=========================== */
+    =========================== */
 
-/* ----- password per role ----- */
+/* ----- password per role (role keys lowercase) ----- */
 const rolePasswords = {
     admin: "admin123",
     supervisor: "sup123",
@@ -552,7 +566,7 @@ const SUPP_KEY = "kms_suppliers_v1";
 const PROD_KEY = "kms_products_v1";
 const TRAIN_KEY = "kms_trainings_v1";
 
-/* ----- default data ----- */
+/* ----- default sample data (used if localStorage empty) ----- */
 const DEFAULT_SOPS = [
     { id: "receive", title: "SOP Penerimaan Susu", content: "Periksa dokumen pemasok\nCek bau, warna, rasa\nCatat suhu (≤6°C)\nInput data ke sistem" },
     { id: "filter", title: "SOP Penyaringan", content: "Gunakan saringan steril\nBersihkan alat sebelum proses\nGunakan sarung tangan" },
@@ -575,113 +589,157 @@ const DEFAULT_TRAIN = [
     { id: generateId("trn"), name: "Modul 2 — Kebersihan & Sanitasi" }
 ];
 
-/* ---------------------- */
-function generateId(prefix="id"){ return prefix + "_" + Math.random().toString(36).slice(2,9); }
-function save(k,d){ localStorage.setItem(k,JSON.stringify(d)); }
-function load(k,fallback){
-    const v = localStorage.getItem(k);
-    if (!v){
-        if (fallback){ save(k,fallback); return JSON.parse(JSON.stringify(fallback)); }
-        return [];
-    }
-    try { return JSON.parse(v); } catch { return []; }
+/* ----------------------
+    Utilities
+    ---------------------- */
+function generateId(prefix = "id") {
+    return prefix + "_" + Math.random().toString(36).slice(2,9);
 }
 
-function ensureDefaults(){
-    if(!localStorage.getItem(SOPS_KEY)) save(SOPS_KEY, DEFAULT_SOPS);
-    if(!localStorage.getItem(SUPP_KEY)) save(SUPP_KEY, DEFAULT_SUPPLIERS);
-    if(!localStorage.getItem(PROD_KEY)) save(PROD_KEY, DEFAULT_PRODUCTS);
-    if(!localStorage.getItem(TRAIN_KEY)) save(TRAIN_KEY, DEFAULT_TRAIN);
+function save(key, data){
+    localStorage.setItem(key, JSON.stringify(data));
+}
+function load(key, fallback){
+    const v = localStorage.getItem(key);
+    if (!v) {
+        if (fallback !== undefined) {
+            save(key, fallback);
+            return JSON.parse(JSON.stringify(fallback));
+        }
+        return [];
+    }
+    try { return JSON.parse(v); } catch(e) { return []; }
 }
 
 /* ----------------------
-     LOGIN SYSTEM
----------------------- */
+    Initialize storage if empty
+    ---------------------- */
+function ensureDefaults(){
+    if (!localStorage.getItem(SOPS_KEY)) save(SOPS_KEY, DEFAULT_SOPS);
+    if (!localStorage.getItem(SUPP_KEY)) save(SUPP_KEY, DEFAULT_SUPPLIERS);
+    if (!localStorage.getItem(PROD_KEY)) save(PROD_KEY, DEFAULT_PRODUCTS);
+    if (!localStorage.getItem(TRAIN_KEY)) save(TRAIN_KEY, DEFAULT_TRAIN);
+}
+
+/* ----------------------
+    LOGIN / LOGOUT 
+    ---------------------- */
 function doLogin(){
-    const role = document.getElementById("roleSelect").value.toLowerCase();
-    const pw = document.getElementById("passwordInput").value;
+    const roleRaw = document.getElementById("roleSelect")?.value || "";
+    const role = String(roleRaw).toLowerCase();
+    const pw = document.getElementById("passwordInput")?.value || "";
     const err = document.getElementById("loginError");
 
     err.textContent = "";
 
-    if (!role || !pw){
+    if (!role || !pw) {
         err.textContent = "Pilih role dan masukkan password.";
         return;
     }
-    if (!rolePasswords[role]){
+    if (!rolePasswords[role]) {
         err.textContent = "Role tidak dikenali.";
         return;
     }
-    if (pw !== rolePasswords[role]){
+    if (pw !== rolePasswords[role]) {
         err.textContent = "Password salah.";
         return;
     }
 
+    // Login sukses: Simpan role, tampilkan UI, dan bersihkan input
     localStorage.setItem("kms_role", role);
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("app").classList.remove("hidden");
+    
+    // Sembunyikan login page dan tampilkan aplikasi
+    const loginPage = document.getElementById("loginPage");
+    const app = document.getElementById("app"); 
+    
+    if (loginPage) loginPage.style.display = 'none';
+    if (app) app.classList.remove("hidden");
 
-    setupRoleUI();
+    // Bersihkan input password
+    document.getElementById("passwordInput").value = "";
+
+    // Setup UI berdasarkan role
+    setupRoleUI(); 
 }
 
 function logout(){
     localStorage.removeItem("kms_role");
+    // Reload saat logout tetap aman (kembali ke login page)
     location.reload();
 }
 
 /* ----------------------
-     ROLE UI CONFIG
----------------------- */
+    Role-based UI setup
+    ---------------------- */
 function setupRoleUI(){
     ensureDefaults();
 
     const role = localStorage.getItem("kms_role");
     if (!role) return;
 
-    const badge = document.getElementById("roleBadge");
-    badge.style.display="inline-block";
-    badge.textContent = role.toUpperCase();
+    // show role badge
+    const roleBadge = document.getElementById("roleBadge");
+    if (roleBadge) {
+        roleBadge.style.display = "inline-block";
+        roleBadge.textContent = role.toUpperCase();
+    }
+    
+    // Tampilkan header Aksi di tabel Supplier hanya jika Admin
+    const supHeader = document.getElementById("supplierActionHeader");
+    if (supHeader) supHeader.style.display = role === "admin" ? "table-cell" : "none";
 
-    const adminLink = document.getElementById("menu-admin");
-    adminLink.style.display = role==="admin" ? "block":"none";
+    // admin menu link show/hide
+    const menuAdmin = document.getElementById("menu-admin");
+    if (menuAdmin) menuAdmin.style.display = role === "admin" ? "block" : "none";
 
-    const hAksi = document.getElementById("supplierActionHeader");
-    hAksi.style.display = role==="admin" ? "table-cell":"none";
-
-    const navs = {
-        home:"home", sop:"sop", kualitas:"kualitas",
-        sanitasi:"sanitasi", pemasok:"pemasok",
-        produk:"produk", pelatihan:"pelatihan",
-        adminPanel:"adminPanel"
+    // nav links mapping
+    const navMap = {
+        home: document.querySelector('a[data-section="home"]'),
+        sop: document.querySelector('a[data-section="sop"]'),
+        kualitas: document.querySelector('a[data-section="kualitas"]'),
+        sanitasi: document.querySelector('a[data-section="sanitasi"]'),
+        pemasok: document.querySelector('a[data-section="pemasok"]'),
+        produk: document.querySelector('a[data-section="produk"]'),
+        pelatihan: document.querySelector('a[data-section="pelatihan"]'),
+        adminPanel: document.querySelector('a[data-section="adminPanel"]') || menuAdmin
     };
 
-    document.querySelectorAll(".sidebar nav a").forEach(a=>a.style.display="none");
+    // hide all nav first
+    Object.values(navMap).forEach(el => {
+        if (el) el.style.display = "none";
+    });
 
-    if(role==="admin"){
-        Object.values(navs).forEach(k=>
-            document.querySelector(`a[data-section="${k}"]`).style.display="block"
-        );
-    } else if(role==="supervisor"){
-        ["home","sop","kualitas","sanitasi","pemasok","produk"]
-        .forEach(k=>document.querySelector(`a[data-section="${k}"]`).style.display="block");
-    } else if(role==="operator"){
-        ["home","sop","kualitas","produk","sanitasi"]
-        .forEach(k=>document.querySelector(`a[data-section="${k}"]`).style.display="block");
-    } else if(role==="viewer"){
-        ["home","sop","pelatihan"]
-        .forEach(k=>document.querySelector(`a[data-section="${k}"]`).style.display="block");
+    // configure per role
+    if (role === "admin") {
+        // Admin melihat SEMUA
+        Object.values(navMap).forEach(el => { if (el) el.style.display = "block"; });
+        if (menuAdmin) menuAdmin.style.display = "block";
+    } else if (role === "supervisor") {
+        // Supervisor: Semua data operasional + Pemasok, kecuali Admin Panel dan Pelatihan
+        ["home","sop","kualitas","sanitasi","pemasok","produk"].forEach(k => { if (navMap[k]) navMap[k].style.display = "block"; });
+    } else if (role === "operator") {
+        // Operator: Fokus pada SOP, Kualitas, dan Produk
+        ["home","sop","kualitas","produk","sanitasi"].forEach(k => { if (navMap[k]) navMap[k].style.display = "block"; });
+    } else if (role === "viewer") {
+        // Viewer: Hanya melihat SOP dan Pelatihan (Staf Baru)
+        ["home", "sop", "pelatihan"].forEach(k => { if (navMap[k]) navMap[k].style.display = "block"; });
     }
 
+    // render content lists
     renderAll();
 
+    // Reset Active Class dan Pindah ke Beranda
+    document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
     const homeLink = document.querySelector('a[data-section="home"]');
-    homeLink.classList.add("active");
-    showSection({currentTarget:homeLink, preventDefault(){}});
+    if (homeLink) {
+        homeLink.classList.add("active"); // Set active class di Beranda
+        showSection({ preventDefault(){}, currentTarget: homeLink });
+    }
 }
 
 /* ----------------------
-     RENDER FUNCTIONS
----------------------- */
+    Renderers (SOP / Suppliers / Products / Trainings)
+    ---------------------- */
 function renderAll(){
     renderSOPs();
     renderSuppliers();
@@ -689,285 +747,317 @@ function renderAll(){
     renderTrainings();
 }
 
-/* ============================================================
-      INLINE EDITOR SOP — NEW SYSTEM
-============================================================ */
 function renderSOPs(){
     const sops = load(SOPS_KEY, DEFAULT_SOPS);
-    const wrap = document.getElementById("sopList");
-    const role = localStorage.getItem("kms_role");
-    wrap.innerHTML = "";
+    const container = document.getElementById("sopList");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const role = localStorage.getItem("kms_role"); // Ambil role di sini
 
     sops.forEach(s => {
         const card = document.createElement("div");
         card.className = "card sopItem";
-        card.id = "sop_card_" + s.id;
+        const title = document.createElement("h3");
+        title.textContent = s.title;
+        title.style.cursor = "pointer";
+        title.onclick = () => {
+            // toggles sop detail within this card
+            const detailId = "sop_detail_" + s.id;
+            let detail = document.getElementById(detailId);
+            if (!detail) {
+                detail = document.createElement("div");
+                detail.id = detailId;
+                detail.className = "sopDetail";
+                // content lines
+                const ol = document.createElement("ol");
+                s.content.split(/\n+/).forEach(line => {
+                    const li = document.createElement("li");
+                    li.textContent = line;
+                    ol.appendChild(li);
+                });
+                detail.appendChild(ol);
+                card.appendChild(detail);
+            }
+            detail.style.display = detail.style.display === "block" ? "none" : "block";
+        };
 
-        /* MODE NORMAL (TAMPIL SOP) */
-        const htmlNormal = `
-            <h3 onclick="toggleDetail('${s.id}')" style="cursor:pointer">
-                ${s.title}
-            </h3>
-            <div id="sop_detail_${s.id}" class="sopDetail" style="display:none;">
-                <ol>${ s.content.split("\n").map(c=>`<li>${c}</li>`).join("") }</ol>
-            </div>
-        `;
+        card.appendChild(title);
 
-        /* MODE ADMIN (TOMBOL EDIT/HAPUS) */
-        let adminCtrl = "";
-        if(role==="admin"){
-            adminCtrl = `
-                <div style="margin-top:10px;">
-                    <button class="adminBtn" onclick="enterEditSOP('${s.id}')">Edit</button>
-                    <button class="adminBtn" style="background:#d62828;" onclick="removeSOP('${s.id}')">Hapus</button>
-                </div>
-            `;
+        // if admin, show edit/delete buttons
+        if (role === "admin") {
+            const actions = document.createElement("div");
+            actions.style.marginTop = "10px";
+            const btnEdit = document.createElement("button");
+            btnEdit.className = "adminBtn";
+            btnEdit.style.marginRight = "8px";
+            btnEdit.textContent = "Edit";
+            btnEdit.onclick = () => editSOP(s.id);
+
+            const btnDel = document.createElement("button");
+            btnDel.className = "adminBtn";
+            btnDel.style.background = "#d62828";
+            btnDel.textContent = "Hapus";
+            btnDel.onclick = () => {
+                if (confirm("Hapus SOP ini?")) removeSOP(s.id);
+            };
+
+            actions.appendChild(btnEdit);
+            actions.appendChild(btnDel);
+            card.appendChild(actions);
         }
 
-        card.innerHTML = htmlNormal + adminCtrl;
-        wrap.appendChild(card);
+        container.appendChild(card);
     });
 
-    if(sops.length===0){
-        wrap.innerHTML = "<div class='card'>Belum ada SOP.</div>";
+    if (sops.length === 0) {
+        container.innerHTML = "<div class='card'>Belum ada SOP. (Admin dapat menambahkan di Panel Admin)</div>";
     }
 }
-
-/* Expand/Collapse */
-function toggleDetail(id){
-    const el = document.getElementById("sop_detail_"+id);
-    if(!el) return;
-    el.style.display = el.style.display==="block" ? "none" : "block";
-}
-
-/* ---------------------------
-      ENTER EDIT MODE
---------------------------- */
-function enterEditSOP(id){
-    const sops = load(SOPS_KEY, DEFAULT_SOPS);
-    const sop = sops.find(x=>x.id===id);
-    if(!sop) return;
-
-    const card = document.getElementById("sop_card_"+id);
-
-    card.innerHTML = `
-        <h3>Edit SOP</h3>
-
-        <label>Judul:</label>
-        <input type="text" id="edit_title_${id}" class="adminInput" value="${sop.title}">
-
-        <label>Isi SOP:</label>
-        <textarea id="edit_content_${id}" class="adminInput" style="min-height:140px;">${sop.content}</textarea>
-
-        <button class="adminBtn" onclick="saveEditSOP('${id}')">Simpan</button>
-        <button class="adminBtn" style="background:#6b7280;" onclick="renderSOPs()">Batal</button>
-    `;
-}
-
-/* ---------------------------
-      SAVE EDIT SOP
---------------------------- */
-function saveEditSOP(id){
-    const newTitle = document.getElementById("edit_title_"+id).value.trim();
-    const newContent = document.getElementById("edit_content_"+id).value.trim();
-
-    if(!newTitle || !newContent){
-        alert("Judul dan isi SOP wajib diisi.");
-        return;
-    }
-
-    let sops = load(SOPS_KEY, DEFAULT_SOPS);
-    const idx = sops.findIndex(x=>x.id===id);
-    if(idx !== -1){
-        sops[idx].title = newTitle;
-        sops[idx].content = newContent;
-        save(SOPS_KEY, sops);
-    }
-
-    renderSOPs();
-    alert("SOP berhasil diperbarui.");
-}
-
-/* ---------------------------
-      DELETE SOP
---------------------------- */
-function removeSOP(id){
-    if(!confirm("Hapus SOP ini?")) return;
-    let sops = load(SOPS_KEY, DEFAULT_SOPS).filter(x=>x.id!==id);
-    save(SOPS_KEY, sops);
-    renderSOPs();
-    alert("SOP dihapus.");
-}
-
-/* ============================================================
-     SUPPLIERS / PRODUCTS / TRAININGS (TANPA PERUBAHAN)
-============================================================ */
 
 function renderSuppliers(){
     const arr = load(SUPP_KEY, DEFAULT_SUPPLIERS);
     const tbody = document.getElementById("supplierList");
-    const role = localStorage.getItem("kms_role");
+    if (!tbody) return;
     tbody.innerHTML = "";
+    const role = localStorage.getItem("kms_role"); // Ambil role di sini
 
-    arr.forEach(s=>{
-        const tr=document.createElement("tr");
+    arr.forEach(s => {
+        const tr = document.createElement("tr");
         tr.innerHTML = `<td>${s.name}</td><td>${s.location}</td><td>${s.contact}</td>`;
-
-        if(role==="admin"){
-            const td=document.createElement("td");
-            const b=document.createElement("button");
-            b.className="adminBtn";
-            b.textContent="Hapus";
-            b.style.background="#d62828";
-            b.onclick=()=>removeSupplier(s.id);
-            td.appendChild(b);
-            tr.appendChild(td);
+        
+        // admin actions
+        if (role === "admin") {
+            const tdActions = document.createElement("td");
+            const btnDel = document.createElement("button");
+            btnDel.className = "adminBtn";
+            btnDel.style.marginLeft = "8px";
+            btnDel.textContent = "Hapus";
+            btnDel.style.background = "#d62828";
+            btnDel.onclick = () => { if(confirm("Hapus pemasok?")) removeSupplier(s.id); };
+            tdActions.appendChild(btnDel);
+            tr.appendChild(tdActions);
         }
+        
+        // Tambahkan kolom kosong jika bukan admin, untuk menjaga jumlah kolom jika header Aksi ada
+        const colCount = tbody.closest('table').querySelectorAll('thead th').length;
+        if (role !== "admin" && colCount === 4) {
+            tr.appendChild(document.createElement("td"));
+        }
+        
         tbody.appendChild(tr);
     });
+    
+    // Perbaikan: Pastikan colCount dihitung dengan benar
+    const headerRow = tbody.closest('table')?.querySelector('thead tr');
+    const colspan = headerRow ? headerRow.querySelectorAll('th').length : 3;
 
-    if(arr.length===0){
-        tbody.innerHTML = "<tr><td colspan='4'>Belum ada pemasok.</td></tr>";
+    if (arr.length === 0) {
+        tbody.innerHTML = `<tr><td colspan='${colspan}'>Belum ada pemasok.</td></tr>`;
     }
-}
-
-function addSupplier(){
-    const name=document.getElementById("supName").value.trim();
-    const loc=document.getElementById("supLoc").value.trim();
-    const c=document.getElementById("supContact").value.trim();
-    if(!name){ alert("Nama wajib."); return; }
-
-    let arr=load(SUPP_KEY, DEFAULT_SUPPLIERS);
-    arr.push({ id:generateId("sup"), name, location:loc||"-", contact:c||"-" });
-    save(SUPP_KEY,arr);
-
-    document.getElementById("supName").value="";
-    document.getElementById("supLoc").value="";
-    document.getElementById("supContact").value="";
-    renderSuppliers();
-}
-
-function removeSupplier(id){
-    if(!confirm("Hapus pemasok?")) return;
-    let arr=load(SUPP_KEY, DEFAULT_SUPPLIERS).filter(x=>x.id!==id);
-    save(SUPP_KEY,arr);
-    renderSuppliers();
 }
 
 function renderProducts(){
-    const arr=load(PROD_KEY, DEFAULT_PRODUCTS);
-    const cont=document.getElementById("productList");
-    const role=localStorage.getItem("kms_role");
-    cont.innerHTML="";
+    const arr = load(PROD_KEY, DEFAULT_PRODUCTS);
+    const cont = document.getElementById("productList");
+    if (!cont) return;
+    cont.innerHTML = "";
+    const role = localStorage.getItem("kms_role"); // Ambil role di sini
 
-    arr.forEach(p=>{
-        const card=document.createElement("div");
-        card.className="productCard card";
-        card.innerHTML=`<h4>${p.name}</h4>`;
-
-        if(role==="admin"){
-            const b=document.createElement("button");
-            b.className="adminBtn";
-            b.style.background="#d62828";
-            b.textContent="Hapus";
-            b.onclick=()=>removeProduct(p.id);
-            card.appendChild(b);
+    arr.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "productCard card";
+        card.innerHTML = `<h4>${p.name}</h4>`;
+        // admin delete
+        if (role === "admin") {
+            const btn = document.createElement("button");
+            btn.className = "adminBtn";
+            btn.style.marginTop = "8px";
+            btn.textContent = "Hapus";
+            btn.style.background = "#d62828";
+            btn.onclick = () => { if(confirm("Hapus produk?")) removeProduct(p.id); };
+            card.appendChild(btn);
         }
         cont.appendChild(card);
     });
-
-    if(arr.length===0){
-        cont.innerHTML="<div class='card'>Belum ada produk.</div>";
-    }
-}
-
-function addProduct(){
-    const name=document.getElementById("prodName").value.trim();
-    if(!name){ alert("Nama wajib."); return; }
-    let arr=load(PROD_KEY, DEFAULT_PRODUCTS);
-    arr.push({id:generateId("prod"), name});
-    save(PROD_KEY,arr);
-    document.getElementById("prodName").value="";
-    renderProducts();
-}
-
-function removeProduct(id){
-    if(!confirm("Hapus produk?")) return;
-    let arr=load(PROD_KEY, DEFAULT_PRODUCTS).filter(x=>x.id!==id);
-    save(PROD_KEY,arr);
-    renderProducts();
+    if (arr.length === 0) cont.innerHTML = "<div class='card'>Belum ada produk.</div>";
 }
 
 function renderTrainings(){
-    const arr=load(TRAIN_KEY, DEFAULT_TRAIN);
-    const list=document.getElementById("trainingList");
-    const role=localStorage.getItem("kms_role");
-    list.innerHTML="";
+    const arr = load(TRAIN_KEY, DEFAULT_TRAIN);
+    const list = document.getElementById("trainingList");
+    if (!list) return;
+    list.innerHTML = "";
+    const role = localStorage.getItem("kms_role"); // Ambil role di sini
 
-    arr.forEach(t=>{
-        const li=document.createElement("li");
-        li.textContent=t.name;
-
-        if(role==="admin"){
-            const b=document.createElement("button");
-            b.className="adminBtn";
-            b.style.marginLeft="8px";
-            b.style.background="#d62828";
-            b.textContent="Hapus";
-            b.onclick=()=>removeTraining(t.id);
-            li.appendChild(b);
+    arr.forEach(t => {
+        const li = document.createElement("li");
+        li.textContent = t.name;
+        if (role === "admin") {
+            const btn = document.createElement("button");
+            btn.className = "adminBtn";
+            btn.style.marginLeft = "8px";
+            btn.textContent = "Hapus";
+            btn.style.background = "#d62828";
+            btn.onclick = () => { if(confirm("Hapus materi?")) removeTraining(t.id); };
+            li.appendChild(btn);
         }
         list.appendChild(li);
     });
+    if (arr.length === 0) list.innerHTML = "<li>Belum ada materi pelatihan.</li>";
+}
 
-    if(arr.length===0){
-        list.innerHTML="<li>Belum ada materi pelatihan.</li>";
+/* ----------------------
+    Admin CRUD functions
+    ---------------------- */
+function addSOP(){
+    const title = document.getElementById("newSopTitle")?.value?.trim();
+    const content = document.getElementById("newSopContent")?.value?.trim();
+    if (!title || !content) { alert("Judul dan isi SOP wajib diisi."); return; }
+    const arr = load(SOPS_KEY, DEFAULT_SOPS);
+    const id = generateId("sop");
+    arr.push({ id, title, content });
+    save(SOPS_KEY, arr);
+    // clear fields
+    document.getElementById("newSopTitle").value = "";
+    document.getElementById("newSopContent").value = "";
+    renderSOPs();
+    alert("SOP berhasil ditambahkan.");
+}
+function editSOP(id){
+    const arr = load(SOPS_KEY, DEFAULT_SOPS);
+    const idx = arr.findIndex(x => x.id === id);
+    if (idx === -1) return alert("SOP tidak ditemukan.");
+    const newTitle = prompt("Edit judul SOP", arr[idx].title);
+    if (newTitle === null) return;
+    const newContent = prompt("Edit isi SOP (pisahkan baris baru dengan Enter)", arr[idx].content);
+    if (newContent === null) return;
+    arr[idx].title = newTitle.trim() || arr[idx].title;
+    arr[idx].content = newContent.trim() || arr[idx].content;
+    save(SOPS_KEY, arr);
+    renderSOPs();
+    alert("SOP diperbarui.");
+}
+function removeSOP(id){
+    let arr = load(SOPS_KEY, DEFAULT_SOPS);
+    arr = arr.filter(x => x.id !== id);
+    save(SOPS_KEY, arr);
+    renderSOPs();
+    alert("SOP dihapus.");
+}
+
+/* Suppliers */
+function addSupplier(){
+    const name = document.getElementById("supName")?.value?.trim();
+    const loc = document.getElementById("supLoc")?.value?.trim();
+    const contact = document.getElementById("supContact")?.value?.trim();
+    if (!name) { alert("Nama supplier wajib."); return; }
+    const arr = load(SUPP_KEY, DEFAULT_SUPPLIERS);
+    arr.push({ id: generateId("sup"), name, location: loc || "-", contact: contact || "-" });
+    save(SUPP_KEY, arr);
+    document.getElementById("supName").value = "";
+    document.getElementById("supLoc").value = "";
+    document.getElementById("supContact").value = "";
+    renderSuppliers();
+    alert("Supplier ditambahkan.");
+}
+function removeSupplier(id){
+    let arr = load(SUPP_KEY, DEFAULT_SUPPLIERS);
+    arr = arr.filter(x => x.id !== id);
+    save(SUPP_KEY, arr);
+    renderSuppliers();
+    alert("Supplier dihapus.");
+}
+
+/* Products */
+function addProduct(){
+    const name = document.getElementById("prodName")?.value?.trim();
+    if (!name) { alert("Nama produk wajib."); return; }
+    const arr = load(PROD_KEY, DEFAULT_PRODUCTS);
+    arr.push({ id: generateId("prod"), name });
+    save(PROD_KEY, arr);
+    document.getElementById("prodName").value = "";
+    renderProducts();
+    alert("Produk ditambahkan.");
+}
+function removeProduct(id){
+    let arr = load(PROD_KEY, DEFAULT_PRODUCTS);
+    arr = arr.filter(x => x.id !== id);
+    save(PROD_KEY, arr);
+    renderProducts();
+    alert("Produk dihapus.");
+}
+
+/* Trainings */
+function addTraining(){
+    const name = document.getElementById("trainName")?.value?.trim();
+    if (!name) { alert("Nama materi wajib."); return; }
+    const arr = load(TRAIN_KEY, DEFAULT_TRAIN);
+    arr.push({ id: generateId("trn"), name });
+    save(TRAIN_KEY, arr);
+    document.getElementById("trainName").value = "";
+    renderTrainings();
+    alert("Materi pelatihan ditambahkan.");
+}
+function removeTraining(id){
+    let arr = load(TRAIN_KEY, DEFAULT_TRAIN);
+    arr = arr.filter(x => x.id !== id);
+    save(TRAIN_KEY, arr);
+    renderTrainings();
+    alert("Materi dihapus.");
+}
+
+/* ----------------------
+    Navigation / Section show
+    ---------------------- */
+function showSection(e){
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
+    const link = e && e.currentTarget ? e.currentTarget : null;
+    let sectionName = null;
+    if (link && link.dataset && link.dataset.section) sectionName = link.dataset.section;
+    if (!sectionName) sectionName = "home";
+
+    // hide all .section
+    document.querySelectorAll(".section").forEach(s => s.classList.add("hidden"));
+
+    // show target if exists
+    const targetEl = document.getElementById(sectionName);
+    if (targetEl) targetEl.classList.remove("hidden");
+
+    // update nav active class
+    // Jika dipanggil dari DOMContentLoaded, active class sudah diurus di setupRoleUI
+    if (e && e.currentTarget) {
+        document.querySelectorAll(".sidebar nav a").forEach(a => a.classList.remove("active"));
+        if (link) link.classList.add("active");
     }
 }
 
-function addTraining(){
-    const n=document.getElementById("trainName").value.trim();
-    if(!n){ alert("Nama wajib."); return; }
-    let arr=load(TRAIN_KEY, DEFAULT_TRAIN);
-    arr.push({id:generateId("trn"), name:n});
-    save(TRAIN_KEY,arr);
-    document.getElementById("trainName").value="";
-    renderTrainings();
-}
-
-function removeTraining(id){
-    if(!confirm("Hapus materi?")) return;
-    let arr=load(TRAIN_KEY, DEFAULT_TRAIN).filter(x=>x.id!==id);
-    save(TRAIN_KEY,arr);
-    renderTrainings();
-}
-
-/* ---------------------------
-      NAVIGATION
---------------------------- */
-function showSection(e){
-    const sec = e.currentTarget.dataset.section;
-    document.querySelectorAll(".section").forEach(s=>s.classList.add("hidden"));
-    document.getElementById(sec).classList.remove("hidden");
-
-    document.querySelectorAll(".sidebar nav a").forEach(a=>a.classList.remove("active"));
-    e.currentTarget.classList.add("active");
-}
-
-/* ---------------------------
-     PAGE LOAD INIT
---------------------------- */
-document.addEventListener("DOMContentLoaded",()=>{
+/* ----------------------
+    Page load - init state (Menangani status login)
+    ---------------------- */
+document.addEventListener("DOMContentLoaded", function(){
     ensureDefaults();
 
-    const role=localStorage.getItem("kms_role");
-    if(role){
-        document.getElementById("loginPage").style.display="none";
-        document.getElementById("app").classList.remove("hidden");
+    // If already logged in -> show app
+    const role = localStorage.getItem("kms_role");
+    const loginPage = document.getElementById("loginPage");
+    const app = document.getElementById("app");
+    
+    if (role) {
+        // Perbaikan: Gunakan style.display='none' untuk loginPage saat load
+        if (loginPage) loginPage.style.display = 'none';
+        if (app) app.classList.remove("hidden");
         setupRoleUI();
+    } else {
+        if (loginPage) loginPage.style.display = 'flex'; // Tampilkan login saat belum ada role
+        if (app) app.classList.add("hidden");
     }
 
-    document.getElementById("passwordInput")
-        .addEventListener("keyup",e=>{ if(e.key==="Enter") doLogin(); });
+    // Attach enter key on password field
+    const pw = document.getElementById("passwordInput");
+    if (pw) pw.addEventListener("keyup", function(e){
+        if (e.key === "Enter") doLogin();
+    });
+
 });
 </script>
